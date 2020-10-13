@@ -32,19 +32,19 @@ import org.apache.jena.tdb2.sys.SystemTDB;
 @SuiteClasses( {
     TestEngine.class ,
     TestSolverExecution.class ,
-    TestPatterns.class 
+    TestPatterns.class
 })
 public class TS_Engine2 {
     static ReorderTransformation original = null;
-    
+
     @BeforeClass static public void beforeClass() {
         Quack.init();
-        original = SystemTDB.defaultReorderTransform;
+        original = SystemTDB.getDefaultReorderTransform();
         // Turn off optimization so test queries execute as written.
-        SystemTDB.defaultReorderTransform = ReorderLib.identity();
+        SystemTDB.setDefaultReorderTransform(ReorderLib.identity());
     }
-    
+
     @AfterClass static public void afterClass() {
-        SystemTDB.defaultReorderTransform = original;
+        SystemTDB.setDefaultReorderTransform(original);
     }
 }

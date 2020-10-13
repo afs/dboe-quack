@@ -20,8 +20,6 @@ package org.seaborne.dboe.engine.join;
 import org.seaborne.dboe.engine.AbstractTestJoin1;
 import org.seaborne.dboe.engine.JoinKey;
 import org.seaborne.dboe.engine.RowList;
-import org.seaborne.dboe.engine.join.HashJoin;
-import org.seaborne.dboe.engine.join.RowOrder;
 import org.seaborne.dboe.engine.row.RowBuilderBase;
 
 /** Tests hash join where the right is streaming */ 

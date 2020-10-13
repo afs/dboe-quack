@@ -25,7 +25,7 @@ import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.Slot;
 
 
-/** Combine all three access forms */
+/** Combine all three access forms: AccessRows, AccessData, fetch(PredicateObjectList) */
 public interface Accessor<X> extends AccessRows<X>, AccessData<X> {
     // -- AccessData
     /** Access by constant/wildcard  pattern to get tuples of data */ 

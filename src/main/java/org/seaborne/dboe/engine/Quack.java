@@ -34,7 +34,7 @@ import org.apache.jena.sparql.util.Context;
 import org.apache.jena.sparql.util.MappingRegistry;
 import org.apache.jena.sparql.util.Symbol;
 import org.apache.jena.tdb2.TDB2;
-import org.apache.jena.tdb2.setup.StoreParams;
+import org.apache.jena.tdb2.params.StoreParams;
 import org.apache.jena.tdb2.solver.QueryEngineTDB;
 import org.apache.jena.tdb2.store.DatasetGraphTDB;
 import org.apache.jena.tdb2.sys.StoreConnection;
@@ -52,7 +52,7 @@ public class Quack {
      * Used by QueryEngineQuackFactory
      */
     public static Symbol opExecutorFactory = Symbol.create("quack:opExecutorFactory");
-    
+
     public static final ExplainCategory quackExec = ExplainCategory.create("quack-exec");
     public static final ExplainCategory quackPlan = ExplainCategory.create("quack-plan");
 
@@ -62,10 +62,10 @@ public class Quack {
     public static boolean JOIN_EXPLAIN = false;
 
     private static boolean initialized = false;
-    
-    public static void setVerbose(boolean verbose) { 
+
+    public static void setVerbose(boolean verbose) {
         if ( verbose ) {
-            // Force statistics output 
+            // Force statistics output
             LogCtl.enable(ARQ.logExecName);
             JOIN_EXPLAIN = true;
             ARQ.setExecutionLogging(InfoLevel.ALL);
@@ -73,25 +73,25 @@ public class Quack {
             Explain2.setActive(Quack.quackPlan);
         } else {
             ARQ.setExecutionLogging(InfoLevel.NONE);
-            Explain2.remove(Quack.quackExec); 
+            Explain2.remove(Quack.quackExec);
             Explain2.remove(Quack.quackPlan);
             JOIN_EXPLAIN = false;
         }
     }
-    
+
     static { init(); }
-    
+
     // Called by the assembler
-    
-    public static void init() { 
+
+    public static void init() {
         if ( initialized )
             return;
         Quack.log.info("Quack");
         initialized = true;
         TDB2.init();
         MappingRegistry.addPrefixMapping("quack", "quack:");
-        
-        QueryEngineTDB.unregister(); 
+
+        QueryEngineTDB.unregister();
         QueryEngineQuackTDB.register();
         Quack.setOpExecutorFactory(OpExecutorQuackTDB.factorySubstitute);
         PlannerSubstitution.DOMERGE = false;
@@ -106,7 +106,7 @@ public class Quack {
         // printIndexes();
         // ARQ.setExecutionLogging(InfoLevel.ALL);
     }
-    
+
     private static void printIndexes() {
         log.info("Triple primary: "+Names.primaryIndexTriples);
         log.info("Triple indexes: "+Arrays.asList(Names.tripleIndexes));
@@ -118,23 +118,23 @@ public class Quack {
         QueryEngineQuackTDB.unregister();
         QueryEngineTDB.register();
     }
-    
+
     public static void rewire() {
     }
-    
+
     public static void explain(boolean state) {
         if ( state )
             Explain2.setActive(quackExec);
         else
             Explain2.remove(quackExec);
     }
-    
-    
+
+
     /** Set the OpExecutorFactory to be used by QueryEngineQuackFactory */
     public static void setOpExecutorFactory(OpExecutorFactory factory) {
         setOpExecutorFactory(ARQ.getContext(), factory);
     }
-    
+
     /** Set the OpExecutorFactory to be used by QueryEngineQuackFactory */
     public static void setOpExecutorFactory(Context context, OpExecutorFactory factory) {
         if ( factory == null )
@@ -153,35 +153,35 @@ public class Quack {
         setOpExecutorFactory(dataset.getContext(), factory);
     }
 
-    /* Return the current global setting for OpExecutorFactory for QueryEngineQuack.*/ 
+    /* Return the current global setting for OpExecutorFactory for QueryEngineQuack.*/
     public static OpExecutorFactory getOpExecutorFactory(Context context) {
         return (OpExecutorFactory)context.get(Quack.opExecutorFactory, null);
     }
-    
+
     public static void hardRewire() {
-        // Replace OSP - until a global default SystemParams is ready. 
+        // Replace OSP - until a global default SystemParams is ready.
         if ( Names.tripleIndexes.length > 2 )
             Names.tripleIndexes[2] = "PSO";
     }
-    
+
     public static Dataset createDataset(OpExecutorFactory executorFactory) {
         return createDataset(Location.mem(), executorFactory);
     }
-    
+
     public static DatasetGraph createDatasetGraph(OpExecutorFactory executorFactory) {
         return createDatasetGraph(Location.mem(), executorFactory);
     }
-    
+
     public static Dataset createDataset(Location location, OpExecutorFactory executorFactory) {
         return DatasetFactory.wrap(createDatasetGraph(location, executorFactory));
     }
-    
+
     public static DatasetGraph createDatasetGraph(Location location, OpExecutorFactory executorFactory) {
         StoreParams sParams = StoreParams.builder()
             // Test to see if POS exists but PSO does not.
             .tripleIndexes(new String[] { Names.primaryIndexTriples, "POS", "PSO", "OSP" })
             //{ primaryIndexQuads, "GPOS", "GOSP", "POSG", "OSPG", "SPOG"};
-            .quadIndexes(new String[] { Names.primaryIndexQuads, 
+            .quadIndexes(new String[] { Names.primaryIndexQuads,
                 "GPOS", "GPSO", "GOSP", "POSG", "PSOG", "OSPG", "SPOG"})
             .build();
         DatasetGraphTDB dsg = StoreConnection.connectCreate(location, sParams).getDatasetGraphTDB();

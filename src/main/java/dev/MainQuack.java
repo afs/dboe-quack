@@ -40,7 +40,7 @@ import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.tdb2.sys.SystemTDB;
 
 public class MainQuack {
-    static { LogCtl.setLog4j(); }
+    static { LogCtl.setLogging(); }
     static String TDIR1 = "testing/Engines";
     static String TDIR2 = "testing/BasicPatterns";
 
@@ -48,40 +48,40 @@ public class MainQuack {
 //        System.out.printf("%s\n", IndexRef.parse("DB[SPO]"));
 //        System.out.printf("%s\n", IndexRef.parse("[SPO]"));
 //        System.exit(0);
-//        
-//        
+//
+//
 //        Quack.init();
 //        QuackPredObj.init();
 //        Quack.setOpExecutorFactory(OpExecutorQuackTDB.factorySubstitute);
-//        
-//        
+//
+//
 //        DatasetGraphTDB dsgtdb = build(Location.mem());
-//        AccessorTDB accessor = AccessorTDB.create(new StorageTDB(dsgtdb)); 
+//        AccessorTDB accessor = AccessorTDB.create(new StorageTDB(dsgtdb));
 //        Planner planner = new PlannerPredObjList(accessor);
 //        BasicPattern bgp = SSE.parseBGP("(bgp (?s :q ?v) (?s :p 123))");
-//        
+//
 //        Node p = SSE.parseNode(":p");
 //        Node q = SSE.parseNode(":q");
-//        
+//
 //        accessor.getNodeTable().getAllocateNodeId(p);
 //        accessor.getNodeTable().getAllocateNodeId(q);
-//        
+//
 //        List<Tuple<Slot<NodeId>>> tuples = ELibTDB.convertTriples(bgp.getList(), accessor.getNodeTable());
 //        PhysicalPlan<NodeId> plan = planner.generatePlan(tuples);
 //        RowList<NodeId> input = RowLib.identityRowList() ;
 //        plan.execute(input);
-//        
+//
 //        System.out.println(plan);
 //        System.exit(0);
     }
-    
+
     public static void mainNodeId(String datafile, String queryFile) {
         //Quack.init();
-        
+
         Query query = QueryFactory.read(queryFile);
         Dataset dsMem = TDB2Factory.createDataset();
         RDFDataMgr.read(dsMem, datafile);
-        
+
 //        // TDB current execution.
 //        Quack.setOpExecutorFactory(dsMem, OpExecutorQuackTDB.factoryTDB1);
 //        doOne("TDB", dsMem, query);
@@ -97,7 +97,7 @@ public class MainQuack {
 //        Quack.setOpExecutorFactory(dsMem, OpExecutorQuackTDB.factorySubstitute);
 //        doOne("Quack/Plain", dsMem, query);
 //        System.out.flush();
-        
+
 //        try {
 //            StepPredicateObjectList.UseNaiveExecution = true;
 //            doOne("QuackPredObj[simple]", dsMem, query);
@@ -107,25 +107,25 @@ public class MainQuack {
     public static void mainNode(String datafile, String queryFile) {
             // New node-space executor.
             System.out.println("**** OpExecutorMain2 ??????");
-    
+
             Query query = QueryFactory.read(queryFile);
             Dataset dsMem = DatasetFactory.create();
             RDFDataMgr.read(dsMem, datafile);
-    
+
     //        RDFDataMgr.write(System.out, dsMem, Lang.TRIG);
     //        System.out.println(query);
-    
+
             QueryEngineMain2.register();
             try {
                 // Test convert to Quad form and execute
                 doOne("ARQ", dsMem, query);
-    
+
                 QC.setFactory(dsMem.getContext(), OpExecutorStageMain.factoryMain);
                 doOne("StageMain", dsMem, query);
-    
+
                 QC.setFactory(dsMem.getContext(), OpExecutorRowsMain.factoryRowsMain);
                 doOne("ARQ/2", dsMem, query);
-            } finally { 
+            } finally {
                 QueryEngineMain2.register();
             }
         }
@@ -140,7 +140,7 @@ public class MainQuack {
 //        String[] indexes = { "SOP", "POS", "PSO", "OSP" };
 //        return build(loc, indexes);
 //    }
-//    
+//
 //    private static DatasetGraphTDB build(Location loc, String[] indexes) {
 //        StoreParams params = StoreParams.builder()
 //            .tripleIndexes(indexes)
@@ -148,40 +148,41 @@ public class MainQuack {
 //            .nodeId2NodeCacheSize(100)
 //            .nodeMissCacheSize(100)
 //            .build();
-//            
+//
 //        DatasetBuilder builder = DatasetBuilderStd.stdBuilder();
 //        DatasetGraphTDB dsg = builder.build(loc, StoreParams.getDftStoreParams());
-//        
+//
 //        QC.setFactory(dsg.getContext(), OpExecutorQuackTDB.factoryPredicateObject);
-//        return dsg; 
+//        return dsg;
 //    }
 
     // Unset any optimization.
     private static RewriteFactory rewriterFactory = null;
     private static ReorderTransformation  reorder = null;
-    
+
     public static void optimizerOff() {
         rewriterFactory = Optimize.getFactory();
         Optimize.setFactory(Optimize.noOptimizationFactory);
-        reorder = SystemTDB.defaultReorderTransform;
+        reorder = SystemTDB.getDefaultReorderTransform();
         // Turn off optimization so test queries execute as written.
-        SystemTDB.defaultReorderTransform = ReorderLib.identity();
+        SystemTDB.setDefaultReorderTransform(ReorderLib.identity());
     }
 
     public static void optimizerReset() {
         if ( rewriterFactory != null ) {
-            SystemTDB.defaultReorderTransform = reorder;
+            // Turn off optimization so test queries execute as written.
+            SystemTDB.setDefaultReorderTransform(reorder);
             Optimize.setFactory(rewriterFactory);
         }
     }
-    
+
     // Run from the test suite
     private static void test(String queryFile, String dataFile) {
         runTest(TDIR1+"/"+queryFile, TDIR1+"/"+dataFile, OpExecutorQuackTDB.factoryPredicateObject);
     }
 
     private static void runTest(String queryFile, String datafile, OpExecutorFactory factory) {
-        
+
         //AccessOps.DEBUG = true;
         Query query = QueryFactory.read(queryFile);
         Dataset ds = DatasetFactory.create(); // TDBFactory.createDataset();
@@ -189,13 +190,13 @@ public class MainQuack {
         // Default. Generated expected results.
         QueryExecution qExec1 = QueryExecutionFactory.create(query, ds);
         ResultSetRewindable rs1 = ResultSetFactory.makeRewindable(qExec1.execSelect());
-        
+
         if ( true ) {
             System.out.println(query);
             RDFDataMgr.write(System.out, ds, Lang.TRIG);
         }
 
-        // Test 
+        // Test
         optimizerOff();
         ds = TDB2Factory.createDataset();
         RDFDataMgr.read(ds, datafile);
@@ -205,7 +206,7 @@ public class MainQuack {
         QueryExecution qExec = QueryExecutionFactory.create(query, ds);
         ResultSetRewindable rs = ResultSetFactory.makeRewindable(qExec.execSelect());
         optimizerReset();
-        
+
         boolean b = ResultSetCompare.equalsByTerm(rs1, rs);
         PrintStream out = System.out;
         if ( ! b ) {

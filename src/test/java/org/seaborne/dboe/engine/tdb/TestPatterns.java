@@ -48,14 +48,14 @@ public class TestPatterns extends Assert
 {
     @Parameters(name="{0}")
     public static Collection<Object[]> data()
-    { 
+    {
         return Arrays.asList(new Object[][] {
             { "OpExecutorTDB", OpExecutorTDB1.OpExecFactoryTDB }
             ,
             { "OpExecutorQuackTDB", OpExecutorQuackTDB.factorySubstitute}
             ,
             { "OpExecutorQuackTDB3", OpExecutorQuackTDB.factoryPredicateObject}
-        });                                        
+        });
     }
 
     private RewriteFactory rewriterFactory = null;
@@ -64,24 +64,22 @@ public class TestPatterns extends Assert
     @BeforeClass static public void beforeClass() {
         Quack2.init();
     }
-    
+
     @AfterClass static public void afterClass() { }
-    
+
     // Unset any optimization.
     @Before
     public void optimizerOff() {
         rewriterFactory = Optimize.getFactory();
         Optimize.setFactory(Optimize.noOptimizationFactory);
-        reorder = SystemTDB.defaultReorderTransform;
-        // Turn off optimization so test queries execute as written.
-        SystemTDB.defaultReorderTransform = ReorderLib.identity();
-
+        reorder = SystemTDB.getDefaultReorderTransform();
+        SystemTDB.setDefaultReorderTransform(ReorderLib.identity());
     }
 
     @After
     public void optimizerReset() {
         if ( rewriterFactory != null ) {
-            SystemTDB.defaultReorderTransform = reorder;
+            SystemTDB.setDefaultReorderTransform(reorder);
             Optimize.setFactory(rewriterFactory);
         }
     }
@@ -93,7 +91,7 @@ public class TestPatterns extends Assert
 
     public TestPatterns(String name/*ignored*/, OpExecutorFactory factory) {
         this.factory = factory;
-        
+
     }
     // See testing/BasicPatterns/produce.rb
     @Test public void bgp_1_triple_00()    { test("bgp-1-triple-00.rq"); }
@@ -144,7 +142,7 @@ public class TestPatterns extends Assert
     @Test public void bgp_input_02()       { test("bgp-input-02.rq"); }
     @Test public void bgp_input_03()       { test("bgp-input-03.rq"); }
     @Test public void bgp_input_04()       { test("bgp-input-04.rq"); }
-    
+
     private void test(String fn) {
         Dataset dataset2 = TDB2Factory.createDataset();
         Txn.executeWrite(dataset2, ()->{
@@ -168,7 +166,7 @@ public class TestPatterns extends Assert
             }
             boolean b = ResultSetCompare.equalsByTerm(rs1, rs2);
 
-            //int count = ResultSetFormatter.consume(rs1); 
+            //int count = ResultSetFormatter.consume(rs1);
 
             if ( !b ) {
 
@@ -187,7 +185,7 @@ public class TestPatterns extends Assert
             //assertNotEquals("Bad test - zero results", 0, count);
         });
     }
-    
+
     private static ResultSetRewindable qexec(Query query, Dataset ds) {
         QueryExecution qExec = QueryExecutionFactory.create(query, ds);
         return ResultSetFactory.makeRewindable(qExec.execSelect());

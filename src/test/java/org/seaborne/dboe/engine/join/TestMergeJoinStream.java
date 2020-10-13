@@ -20,8 +20,6 @@ package org.seaborne.dboe.engine.join;
 import org.seaborne.dboe.engine.AbstractTestJoin1;
 import org.seaborne.dboe.engine.JoinKey;
 import org.seaborne.dboe.engine.RowList;
-import org.seaborne.dboe.engine.join.MergeJoin;
-import org.seaborne.dboe.engine.join.RowOrder;
 import org.seaborne.dboe.engine.row.RowBuilderBase;
 
 /** Tests the naive(est) materialing inner loop join */ 

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
    </pre>  
  */
 public class tdbindexcopy extends CmdARQ {
-    static { LogCtl.setCmdLogging(); }
+    static { LogCtl.setLogging(); }
     static Logger log = LoggerFactory.getLogger(tdbindexcopy.class);
     
     static final ArgDecl argLocation = new ArgDecl(true, "loc", "location");

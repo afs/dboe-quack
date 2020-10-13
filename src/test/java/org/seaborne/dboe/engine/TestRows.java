@@ -21,10 +21,6 @@ import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.seaborne.dboe.engine.Row;
-import org.seaborne.dboe.engine.RowBuilder;
-import org.seaborne.dboe.engine.RowLib;
-import org.seaborne.dboe.engine.RowList;
 import org.seaborne.dboe.engine.row.RowBase;
 import org.seaborne.dboe.engine.row.RowVarBinding;
 

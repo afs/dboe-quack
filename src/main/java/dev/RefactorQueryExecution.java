@@ -20,7 +20,6 @@ package dev;
 import java.util.List;
 
 import org.apache.jena.atlas.logging.LogCtl;
-
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.sparql.algebra.Op;
@@ -41,7 +40,7 @@ import org.apache.jena.sparql.util.QueryExecUtils;
 
 public class RefactorQueryExecution
 {
-    static { LogCtl.setCmdLogging(); }
+    static { LogCtl.setLogging(); }
 
     public static void main(String... argv) throws Exception {
     }

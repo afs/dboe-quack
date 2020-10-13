@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * Dump a TDB index.
  */
 public class tdbindexdump extends CmdARQ {
-    static { LogCtl.setCmdLogging(); }
+    static { LogCtl.setLogging(); }
     static Logger log = LoggerFactory.getLogger(tdbindexcopy.class);
 
     static final ArgDecl argLocation = new ArgDecl(true, "loc", "location");

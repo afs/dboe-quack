@@ -33,7 +33,7 @@ import org.apache.jena.tdb2.store.DatasetGraphTDB;
  * so that the exact choice of executor can change for the same dataset. 
  */ 
 public class QueryEngineQuackTDB extends QueryEngineTDB {
-    // Using QueryEngineTDB machinary is convenience.
+    // Using QueryEngineTDB machinery is convenience.
     // ---- Wiring
     static public QueryEngineFactory getFactory()   { return queryEngineFactory; } 
     static public void register()                   { QueryEngineRegistry.addFactory(queryEngineFactory); }
