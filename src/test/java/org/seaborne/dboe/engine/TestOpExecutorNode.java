@@ -22,16 +22,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.sparql.engine.main.OpExecutor;
+import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.seaborne.dboe.engine.general.OpExecutorRowsMain;
 import org.seaborne.dboe.engine.general.OpExecutorStageMain;
-
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
-import org.apache.jena.sparql.engine.main.OpExecutor;
-import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 
 /** Tests of OpExecutor that work in Node space and hence on a plain in-memory dataset */
 @RunWith(Parameterized.class)

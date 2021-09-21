@@ -20,9 +20,9 @@ package org.seaborne.dboe.engine.tdb;
 import java.util.List;
 
 import org.apache.jena.atlas.lib.tuple.Tuple;
+import org.apache.jena.tdb2.store.NodeId;
 import org.seaborne.dboe.engine.PhysicalPlan;
 import org.seaborne.dboe.engine.Slot;
-import org.apache.jena.tdb2.store.NodeId;
 
 public interface Planner
 {

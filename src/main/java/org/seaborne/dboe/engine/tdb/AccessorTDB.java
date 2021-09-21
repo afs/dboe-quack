@@ -25,11 +25,11 @@ import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.atlas.lib.tuple.TupleFactory;
 import org.apache.jena.atlas.logging.Log;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.tdb2.store.NodeId;
+import org.apache.jena.tdb2.store.nodetable.NodeTable;
 import org.seaborne.dboe.engine.*;
 import org.seaborne.dboe.engine.access.Accessor;
 import org.seaborne.dboe.engine.row.RowBuilderBase;
-import org.apache.jena.tdb2.store.NodeId;
-import org.apache.jena.tdb2.store.nodetable.NodeTable;
 
 public class AccessorTDB implements Accessor<NodeId> {
     private final StorageTDB db;

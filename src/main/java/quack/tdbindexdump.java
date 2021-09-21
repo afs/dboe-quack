@@ -18,10 +18,10 @@
 package quack;
 
 import arq.cmdline.CmdARQ;
-import jena.cmd.ArgDecl;
-import jena.cmd.CmdException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.atlas.logging.LogCtl;
+import org.apache.jena.cmd.ArgDecl;
+import org.apache.jena.cmd.CmdException;
 import org.apache.jena.dboe.base.file.Location;
 import org.apache.jena.query.ARQ;
 import org.apache.jena.riot.RIOT;
@@ -75,13 +75,13 @@ public class tdbindexdump extends CmdARQ {
         int N = idx.getIndexName().length();
         if ( N != 3 && N != 4 )
             throw new CmdException("Index must 3 or 4 in length : " + idx.getIndexName());
-        
+
         if ( ! idx.exists() )
             throw new CmdException("No such index: "+ idx);
     }
 
     @Override
-    protected void exec() {   
+    protected void exec() {
             throw new NotImplementedException(cmdName);
 //        //FmtLog.info(log, "dump %s", idx);
 //
@@ -90,7 +90,7 @@ public class tdbindexdump extends CmdARQ {
 //
 //        if ( ! idx.exists() )
 //            throw new CmdException("No such index: "+idx);
-//        
+//
 //        TupleIndex tupleIndex = IndexLib.connect(idx, primaryIndex);
 //
 //        IndexLib.dumpTupleIndex(tupleIndex);

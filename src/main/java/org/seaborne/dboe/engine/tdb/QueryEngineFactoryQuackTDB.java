@@ -28,9 +28,9 @@ import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
 import org.apache.jena.sparql.util.Context;
-import org.seaborne.dboe.engine.Quack;
 import org.apache.jena.tdb2.TDBException;
 import org.apache.jena.tdb2.store.DatasetGraphTDB;
+import org.seaborne.dboe.engine.Quack;
 
 public class QueryEngineFactoryQuackTDB implements QueryEngineFactory
 {

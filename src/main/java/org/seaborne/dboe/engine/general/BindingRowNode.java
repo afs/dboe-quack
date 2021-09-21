@@ -18,19 +18,27 @@
 package org.seaborne.dboe.engine.general;
 
 import java.util.Iterator;
-
-import org.seaborne.dboe.engine.Row;
+import java.util.function.BiConsumer;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
+import org.seaborne.dboe.engine.Row;
 
 /** Wrap a Row&lt;Node&gt; to present the Binding interface */
 public final class BindingRowNode implements Binding {
     private final Row<Node> row;
 
     public BindingRowNode(Row<Node> row) { this.row = row; }
-    
+
+    @Override
+    public void forEach(BiConsumer<Var, Node> action) {
+        row.vars().forEach(v-> {
+            Node n = row.get(v);
+            action.accept(v, n);
+        });
+    }
+
     @Override
     public Iterator<Var> vars() {
         return row.vars().iterator();

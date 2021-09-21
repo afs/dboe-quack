@@ -17,9 +17,6 @@
 
 package org.seaborne.dboe.engine.general;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.apache.jena.graph.Graph;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.core.DatasetGraph;
@@ -27,6 +24,8 @@ import org.apache.jena.sparql.engine.ExecutionContext;
 import org.apache.jena.sparql.engine.QueryIterator;
 import org.apache.jena.sparql.engine.main.OpExecutor;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** OpExecutor in Node space; direct graph matcher; quads iterated over to make graph calls.
  *  Old style - not quack/rows (see OpExecutorRowsMain for that). 

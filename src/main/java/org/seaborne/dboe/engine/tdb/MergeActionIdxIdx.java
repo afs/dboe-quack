@@ -19,9 +19,9 @@ package org.seaborne.dboe.engine.tdb;
 
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.sparql.core.Var;
-import org.seaborne.dboe.engine.Slot;
 import org.apache.jena.tdb2.store.NodeId;
 import org.apache.jena.tdb2.store.tupletable.TupleIndex;
+import org.seaborne.dboe.engine.Slot;
 
 /** Two-sided merge of two index accesses */
 public class MergeActionIdxIdx {

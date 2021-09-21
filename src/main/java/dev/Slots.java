@@ -31,13 +31,13 @@ public class Slots<X> extends TupleN<Slot<X>> {
     public static <X> Slots<X> create(Slot<X> ... slots) {
         return new Slots<X>(slots);
     }
-    
+
     protected Slots(@SuppressWarnings("unchecked") Slot<X>... tuple) {
         super(tuple);
     }
-    
-    /** Substitute from row */ 
-    public Slots<X> subst(Row<X> row) { 
+
+    /** Substitute from row */
+    public Slots<X> subst(Row<X> row) {
      // Replace Slot var with any
         final int N = len();
         @SuppressWarnings("unchecked")
@@ -53,11 +53,11 @@ public class Slots<X> extends TupleN<Slot<X>> {
         }
         return new Slots<X>(converted);
     }
-    
+
     /** Substitute from row and if still a varibale, replace with the "any value"
-     *  Same as {@code .subst(row).replaceVar(anyValue)} but more efficient. 
+     *  Same as {@code .subst(row).replaceVar(anyValue)} but more efficient.
      */
-    public Tuple<X> substReplace(Row<X> row, X anyValue) { 
+    public Tuple<X> substReplace(Row<X> row, X anyValue) {
         // Replace Slot var with any
            final int N = len();
            @SuppressWarnings("unchecked")
@@ -73,7 +73,7 @@ public class Slots<X> extends TupleN<Slot<X>> {
            }
            return TupleFactory.create(converted);
        }
-    
+
     /** apply a tranformation to the tuple pattern */
     public <Z> Tuple<Z> mapToTuple(Function<Slot<X>,Z> transform) {
         final int N = len();
@@ -86,8 +86,8 @@ public class Slots<X> extends TupleN<Slot<X>> {
         return TupleFactory.tuple(converted);
     }
 
-    /** apply a tranformation to the tuple pattern */
-    public <Z> Slots<Z> map(Function<Slot<X>,Slot<Z>> transform) {
+    /** apply a transformation to the tuple pattern */
+    public <Z> Slots<Z> mapSlots(Function<Slot<X>,Slot<Z>> transform) {
         final int N = len();
         @SuppressWarnings("unchecked")
         Slot<Z>[] converted = (Slot<Z>[])new Object[N];
@@ -98,8 +98,8 @@ public class Slots<X> extends TupleN<Slot<X>> {
         return new Slots<Z>(converted);
     }
 
-    /** Build a {@link Tuple} from the pattern with each var replaced by the "any value" */  
-    public Tuple<X> replaceVar(X anyValue) { 
+    /** Build a {@link Tuple} from the pattern with each var replaced by the "any value" */
+    public Tuple<X> replaceVar(X anyValue) {
         // Replace Slot var with any
         final int N = len();
         @SuppressWarnings("unchecked")

@@ -31,13 +31,13 @@ import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
 import org.apache.jena.sparql.resultset.ResultSetCompare;
 import org.apache.jena.sparql.util.QueryExecUtils;
+import org.apache.jena.tdb2.TDB2Factory;
+import org.apache.jena.tdb2.sys.SystemTDB;
 import org.seaborne.dboe.engine.Quack;
 import org.seaborne.dboe.engine.general.OpExecutorRowsMain;
 import org.seaborne.dboe.engine.general.OpExecutorStageMain;
 import org.seaborne.dboe.engine.general.QueryEngineMain2;
 import org.seaborne.dboe.engine.tdb.OpExecutorQuackTDB;
-import org.apache.jena.tdb2.TDB2Factory;
-import org.apache.jena.tdb2.sys.SystemTDB;
 
 public class MainQuack {
     static { LogCtl.setLogging(); }

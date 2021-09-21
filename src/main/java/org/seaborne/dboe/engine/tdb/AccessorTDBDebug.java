@@ -20,13 +20,13 @@ package org.seaborne.dboe.engine.tdb;
 import java.util.Iterator;
 
 import org.apache.jena.atlas.lib.tuple.Tuple;
+import org.apache.jena.tdb2.store.NodeId;
+import org.apache.jena.tdb2.store.nodetable.NodeTable;
 import org.seaborne.dboe.engine.PredicateObjectList;
 import org.seaborne.dboe.engine.Quack;
 import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.Slot;
 import org.seaborne.dboe.engine.explain.Explain2;
-import org.apache.jena.tdb2.store.NodeId;
-import org.apache.jena.tdb2.store.nodetable.NodeTable;
 
 /** Debugging wrapper for an AccessorTDB */
 public class AccessorTDBDebug extends AccessorTDB {

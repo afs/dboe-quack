@@ -188,6 +188,6 @@ public class TestPatterns extends Assert
 
     private static ResultSetRewindable qexec(Query query, Dataset ds) {
         QueryExecution qExec = QueryExecutionFactory.create(query, ds);
-        return ResultSetFactory.makeRewindable(qExec.execSelect());
+        return qExec.execSelect().rewindable();
     }
 }

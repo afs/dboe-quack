@@ -39,8 +39,7 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.ExecutionContext;
 import org.apache.jena.sparql.engine.QueryIterator;
 import org.apache.jena.sparql.engine.binding.Binding;
-import org.apache.jena.sparql.engine.binding.BindingFactory;
-import org.apache.jena.sparql.engine.binding.BindingMap;
+import org.apache.jena.sparql.engine.binding.BindingBuilder;
 import org.apache.jena.sparql.engine.iterator.QueryIterNullIterator;
 import org.apache.jena.sparql.engine.iterator.QueryIterPlainWrapper;
 import org.apache.jena.sparql.engine.iterator.QueryIterRepeatApply;
@@ -50,17 +49,17 @@ import org.apache.jena.sparql.engine.optimizer.reorder.ReorderProc;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
 import org.apache.jena.sparql.expr.ExprList;
 import org.apache.jena.tdb.solver.OpExecutorTDB1;
+import org.apache.jena.tdb2.store.DatasetGraphTDB;
+import org.apache.jena.tdb2.store.GraphTDB;
+import org.apache.jena.tdb2.store.NodeId;
+import org.apache.jena.tdb2.store.nodetable.NodeTable;
 import org.seaborne.dboe.engine.*;
 import org.seaborne.dboe.engine.explain.Explain2;
 import org.seaborne.dboe.engine.extra_tdb.OpExecutorTDBBase;
 import org.seaborne.dboe.engine.general.OpExecLib;
 import org.seaborne.dboe.engine.row.RowBuilderBase;
-import org.apache.jena.tdb2.store.DatasetGraphTDB;
-import org.apache.jena.tdb2.store.GraphTDB;
-import org.apache.jena.tdb2.store.NodeId;
-import org.apache.jena.tdb2.store.nodetable.NodeTable;
 
-/** Query execution for TDB */ 
+/** Query execution for TDB */
 public class OpExecutorQuackTDB extends OpExecutorTDBBase
 {
     private static OpExecSetup setupPlain = new OpExecSetup() {
@@ -96,7 +95,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             return opExec;
         }
     };
-        
+
     /**TDB execution with the Predicate-Object list planner.*/
     public static final OpExecutorFactory factoryPredicateObject = new OpExecutorFactory() {
         @Override
@@ -105,13 +104,13 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             return new OpExecutorQuackTDB(execCxt, setupPredicateObject);
         }
     };
-        
+
     /** TDB execution with the old TDB execution engine */
     public static final OpExecutorFactory factoryTDB1 = new OpExecutorFactory() {
         @Override
         public OpExecutor create(ExecutionContext execCxt) {
             Explain2.explain(Quack.quackExec, "Quack-TDB1");
-            return new OpExecutorTDB1(execCxt); 
+            return new OpExecutorTDB1(execCxt);
         }
     };
 
@@ -121,10 +120,10 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
     }
 
     // ---- Object
-    
+
     protected final AccessorTDB accessor;
     protected final Planner planner;
-    
+
     public OpExecutorQuackTDB(ExecutionContext execCxt, OpExecSetup setup) {
         super(execCxt);
         if ( isForThisExecutor ) {
@@ -135,54 +134,54 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             planner = null;
         }
     }
-    
+
     @Override
     protected QueryIterator exec(Op op, QueryIterator input) {
         //if ( level < 0 )
-            // Print only at top level (and we're called before level++) 
+            // Print only at top level (and we're called before level++)
             Explain2.explain(Quack.quackExec, "exec Op =\n%s", op);
         return super.exec(op, input);
     }
 
     // XXX Long term - move away from RepeatApply and do more with executing a whole Iterator<Binding> input
-    // Issues - (1) variables in the input used in the pattern. (2) passing the right parent to the rows->binding step. 
-    
+    // Issues - (1) variables in the input used in the pattern. (2) passing the right parent to the rows->binding step.
+
     @Override
     protected QueryIterator evaluateBlockFilter(final DatasetGraphTDB dsgtdb, final Node graphNode, BasicPattern bgp, final ExprList exprs, QueryIterator _input) {
         Iterator<Binding> input = _input;
         ReorderTransformation reorder = dsgtdb.getReorderTransform();
-        
+
         if ( true && ! OpExecLib.isRootInput(_input) ) {
             // The input may help ground the pattern.
             // Substitue the first binding, calculate the reordering from the
-            // substitued pattern and apply to the basic graph pattern. 
+            // substitued pattern and apply to the basic graph pattern.
             PeekIterator<Binding> peek = PeekIterator.create(input);
             input = peek;
             Binding b = peek.peek();
             BasicPattern bgp2 = Substitute.substitute(bgp, b);
             ReorderProc rproc = reorder.reorderIndexes(bgp2);
-            // Reorder bgp based on bgp2. 
+            // Reorder bgp based on bgp2.
             final BasicPattern bgp$ = rproc.reorder(bgp);
-            QueryIterator overall = new QueryIterRepeatApply(new QueryIterPlainWrapper(input, execCxt), execCxt) {
+            QueryIterator overall = new QueryIterRepeatApply(QueryIterPlainWrapper.create(input, execCxt), execCxt) {
                 @Override
                 protected QueryIterator nextStage(Binding input1) {
                     return evaluateBlockFilterSub(dsgtdb, graphNode, bgp$, exprs, input1);
                 }
             };
             // Ensure input is closed properly.
-            // This should not be necessary if 'input' is handled properly. 
+            // This should not be necessary if 'input' is handled properly.
             //qIter = new QueryIteratorCloseable(qIter, _input);
             return overall;
         } else {
             // Root - do directly.
             bgp = reorder.reorder(bgp);
-            Binding b = _input.next(); 
-            _input.close(); 
+            Binding b = _input.next();
+            _input.close();
             QueryIterator results = evaluateBlockFilterSub(dsgtdb, graphNode, bgp, exprs, b);
             _input.close();
             return results;
         }
-//        
+//
 //        // Or RepeatApplyIteator?
 //        QueryIterator overall = new QueryIterRepeatApply(new QueryIterPlainWrapper(input, execCxt), execCxt) {
 //            @Override
@@ -191,17 +190,17 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
 //            }
 //        };
 //        // Ensure input is closed properly.
-//        // This should not be necessary if 'input' is handled properly. 
+//        // This should not be necessary if 'input' is handled properly.
 //        //qIter = new QueryIteratorCloseable(qIter, _input);
 //        return overall;
     }
 
-    /** Execute for one input binding */  
+    /** Execute for one input binding */
     protected QueryIterator evaluateBlockFilterSub(DatasetGraphTDB dsgtdb, Node graphNode, BasicPattern bgp, ExprList exprs, Binding input1) {
-        Explain2.explain(Quack.quackExec, "%s, BGP =\n%s", graphNode, bgp);  
+        Explain2.explain(Quack.quackExec, "%s, BGP =\n%s", graphNode, bgp);
         PhysicalPlan<NodeId> plan = new PhysicalPlan<>();
         bgp = Substitute.substitute(bgp, input1);
-        
+
         if ( exprs != null ) {
             Op op;
             if ( graphNode == null )
@@ -212,7 +211,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
         } else {
             accumulatePlan(plan, graphNode, bgp);
         }
-        
+
         return executePlan$(plan, input1);
     }
 
@@ -239,22 +238,22 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             Set<Var> vars = Collections.emptySet(); // Reuse?
             rows = RowLib.createRowList(vars, Iter.singleton(row));
         }
-        
-        RowList<NodeId> results = executePlan(plan, rows); 
+
+        RowList<NodeId> results = executePlan(plan, rows);
         // And include the input bindings not passed on.
         Iterator<Binding> bIter = convertToBindings(results.iterator(), input, accessor.getNodeTable());
-        return new QueryIterPlainWrapper(bIter, execCxt);
+        return QueryIterPlainWrapper.create(bIter, execCxt);
     }
 
     /** Convert rows to bindings for a give parent, that may, or may not,
-     *  have equivalent bindings of variables in the rows */ 
+     *  have equivalent bindings of variables in the rows */
     private static Iterator<Binding> convertToBindings(Iterator<Row<NodeId>> iter, final Binding parent, final NodeTable nodeTable) {
         return Iter.map(iter, (row)-> {
             if ( parent.isEmpty() )
                 return new BindingRow(row, nodeTable);
-            
-            // Temporary fix.  Proper fix is to change BindingBase to allow multiple occurrences in a controlled way. 
-            BindingMap b = BindingFactory.create();
+
+            // Temporary fix.  Proper fix is to change BindingBase to allow multiple occurrences in a controlled way.
+            BindingBuilder b = Binding.builder();
             if ( ! parent.isEmpty() ) {
                 for ( Iterator<Var> vars = parent.vars(); vars.hasNext(); ) {
                     Var v = vars.next();
@@ -262,7 +261,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
                         b.add(v, parent.get(v));
                 }
             }
-            return new BindingRow(b, row, nodeTable);
+            return new BindingRow(b.build(), row, nodeTable);
         });
     }
 
@@ -276,7 +275,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
         RowList<NodeId> results = plan.execute(rows);
         return results;
     }
-    
+
     private static void explainPlan(PhysicalPlan<NodeId> plan) {
         Explain2.explain(Quack.quackPlan, plan);
     }
@@ -310,13 +309,13 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             plan.add(step);
             return;
         }
-        
+
         if ( op instanceof OpBGP ) {
             OpBGP opBGP = (OpBGP)op;
             accumulatePlan(plan, null, opBGP.getPattern());
             return;
         }
-        
+
         if ( op instanceof OpQuadPattern ) {
             OpQuadPattern opQuads = (OpQuadPattern)op;
             accumulatePlan(plan, opQuads.getGraphNode(), opQuads.getBasicPattern());
@@ -339,17 +338,17 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
         }
         throw new InternalErrorException("Unknown Op passed to accumulatePlan: "+Lib.className(op) );
     }
-    
+
     private void accumulatePlan(PhysicalPlan<NodeId> plan, Node graphNode, BasicPattern basicPattern) {
         List<Triple> triples = basicPattern.getList();
         int N = OpExecLib.isDefaultGraph(graphNode) ? 3 : 4;
         List<Tuple<Slot<NodeId>>> tuples;
-        if ( OpExecLib.isDefaultGraph(graphNode) ) 
+        if ( OpExecLib.isDefaultGraph(graphNode) )
             tuples = ELibTDB.convertTriples(triples, accessor.getNodeTable());
-        else 
+        else
             tuples = ELibTDB.convertQuads(graphNode, triples, accessor.getNodeTable());
-        
-        // Some concrete term was not found so this pattern can not match. 
+
+        // Some concrete term was not found so this pattern can not match.
         if ( tuples == null ) {
             plan.add(new StepNothing<NodeId>());
             return;
@@ -359,7 +358,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
         plan.append(p);
     }
 
-    /** Generate a plan for a block of tuples patterns */ 
+    /** Generate a plan for a block of tuples patterns */
     protected final PhysicalPlan<NodeId> generateAccessPlan(List<Tuple<Slot<NodeId>>> tuples) {
         return planner.generatePlan(tuples);
     }

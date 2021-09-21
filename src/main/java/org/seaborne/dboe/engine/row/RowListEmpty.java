@@ -17,12 +17,14 @@
 
 package org.seaborne.dboe.engine.row;
 
-import java.util.*;
-
-import org.seaborne.dboe.engine.Row;
-import org.seaborne.dboe.engine.RowList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.jena.sparql.core.Var;
+import org.seaborne.dboe.engine.Row;
+import org.seaborne.dboe.engine.RowList;
 
 /** The join identity RowList : one row, no variables */ 
 public class RowListEmpty<X> implements RowList<X>

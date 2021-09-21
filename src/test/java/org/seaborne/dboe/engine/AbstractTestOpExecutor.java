@@ -19,14 +19,13 @@ package org.seaborne.dboe.engine;
 
 import java.io.PrintStream;
 
-import org.junit.Assert;
-import org.apache.jena.riot.RDFDataMgr;
-import org.junit.Test;
-
 import org.apache.jena.query.*;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
 import org.apache.jena.sparql.resultset.ResultSetCompare;
+import org.junit.Assert;
+import org.junit.Test;
 
 /** Tests of OpExecutor */
 public abstract class AbstractTestOpExecutor extends Assert

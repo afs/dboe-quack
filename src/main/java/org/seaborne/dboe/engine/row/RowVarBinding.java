@@ -20,10 +20,9 @@ package org.seaborne.dboe.engine.row;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.jena.sparql.core.Var;
 import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.RowBuilder;
-
-import org.apache.jena.sparql.core.Var;
 /** 
  * Implementation of Row based on a parent+chain of additonal bindings.
  */

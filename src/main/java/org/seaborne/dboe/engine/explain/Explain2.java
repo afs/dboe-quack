@@ -20,9 +20,8 @@ package org.seaborne.dboe.engine.explain;
 import java.io.PrintStream;
 import java.util.HashSet;
 
-import org.slf4j.Logger;
-
 import org.apache.jena.query.ARQ;
+import org.slf4j.Logger;
 
 public class Explain2
 {

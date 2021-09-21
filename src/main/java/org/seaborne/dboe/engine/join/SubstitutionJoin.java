@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
 
+import migrate.RepeatApplyIterator;
 import org.apache.jena.atlas.iterator.Iter;
-import org.apache.jena.atlas.iterator.RepeatApplyIterator;
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.atlas.logging.FmtLog;
 import org.apache.jena.sparql.core.Var;
@@ -48,7 +48,7 @@ public class SubstitutionJoin {
         private long s_countLHS = 0;
         //private long s_countRHS = 0;
         private long s_countResults = 0;
-        
+
         private final Tuple<Slot<X>> pattern;
         private final AccessRows<X> accessor;
         private final RowBuilder<X> builder;
@@ -74,7 +74,7 @@ public class SubstitutionJoin {
             Iterator<Row<X>> iter2 = Iter.map(iter1, addIncoming);
             return iter2;
         }
-        
+
         @Override
         protected void hasFinished() {
             if ( Quack.JOIN_EXPLAIN ) {

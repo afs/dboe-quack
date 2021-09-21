@@ -22,9 +22,9 @@ import java.util.Set;
 
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.tdb2.store.NodeId;
 import org.seaborne.dboe.engine.*;
 import org.seaborne.dboe.engine.access.AccessRows;
-import org.apache.jena.tdb2.store.NodeId;
 
 class StepAccess implements Step<NodeId> {
     private final AccessRows<NodeId> accessor;

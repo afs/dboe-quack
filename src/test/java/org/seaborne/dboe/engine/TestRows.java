@@ -19,12 +19,11 @@ package org.seaborne.dboe.engine;
 
 import java.util.Iterator;
 
+import org.apache.jena.sparql.core.Var;
 import org.junit.Assert;
 import org.junit.Test;
 import org.seaborne.dboe.engine.row.RowBase;
 import org.seaborne.dboe.engine.row.RowVarBinding;
-
-import org.apache.jena.sparql.core.Var;
 
 public class TestRows extends Assert
 {

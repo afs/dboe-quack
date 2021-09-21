@@ -38,20 +38,21 @@ import org.apache.jena.sparql.engine.ExecutionContext;
 import org.apache.jena.sparql.engine.QueryIterator;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.sparql.engine.iterator.*;
+import org.apache.jena.sparql.engine.main.solver.PatternMatchData;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprList;
 import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.RowList;
 import org.seaborne.dboe.engine.Slot;
 
-/** Helper functions related to OpExecutor implementation */ 
+/** Helper functions related to OpExecutor implementation */
 public class OpExecLib {
     /**
      * Is this a node referring to the default graph?
      * @param graphNode
      */
     public static boolean isDefaultGraph(Node graphNode) {
-        return graphNode == null || Quad.isDefaultGraph(graphNode); 
+        return graphNode == null || Quad.isDefaultGraph(graphNode);
     }
 
     /**
@@ -59,14 +60,14 @@ public class OpExecLib {
      * @param graphNode
      */
     public static boolean isUnionGraph(Node graphNode) {
-        return Quad.isUnionGraph(graphNode); 
+        return Quad.isUnionGraph(graphNode);
     }
 
     /** Handle special graph node names and return the Node needed for a match:<br/>
      *  Returns null for default graph in storage.<br/>
      *  Returns Node.ANY for the unionGraph (needs duplicate supression).
      */
-    
+
     public static Node decideGraphNode(Node gn, ExecutionContext execCxt) {
         // ---- Graph names with special meaning.
         // Graph names with special meaning:
@@ -76,7 +77,7 @@ public class OpExecLib {
         //    -- the internal marker node used for the quad form of queries.
         //  Quad.unionGraph
         ///   -- the IRI used in GRAPH <> to mean the union of named graphs
-    
+
         if ( isDefaultGraphStorage(gn) )
             return null;
         if ( isUnionGraph(gn) )
@@ -98,10 +99,10 @@ public class OpExecLib {
     public static boolean isRootInput(QueryIterator input) {
         return (input instanceof QueryIterRoot);
     }
-    
-    
+
+
     /** Wrap a QueryIterator in some filter expressions
-     * @param qIter 
+     * @param qIter
      *  QueryIterator
      * @param exprs
      *  Expression list, or null.
@@ -116,8 +117,6 @@ public class OpExecLib {
         }
         return qIter;
     }
-    
-
 
     /** Solve a pattern on the given graph; no reordering of the basic graph pattern is done. */
     /*public*/private static QueryIterator solvePattern$(final Graph graph, final BasicPattern bgp, QueryIterator input, final ExecutionContext execCxt) {
@@ -134,7 +133,7 @@ public class OpExecLib {
         };
         return qIter;
     }
-    
+
     /** Solve a pattern on the given graph; no reordering of the basic graph pattern is done.
      *  Better to use method that includes input.
      */
@@ -152,7 +151,7 @@ public class OpExecLib {
         ExecutionContext execCxt = null;
         if ( input instanceof QueryIter )
             execCxt = ((QueryIter)input).getExecContext();
-        return QueryIterBlockTriples.create(input, bgp, execCxt);
+        return PatternMatchData.execute(graph, bgp, input, null, execCxt);
     }
 
     public static QueryIterator solvePattern(Graph graph, BasicPattern bgp, QueryIterator input, ExecutionContext execCxt) {
@@ -160,9 +159,9 @@ public class OpExecLib {
             execCxt = new ExecutionContext(ARQ.getContext(), graph, null, null);
         if ( input == null )
             input = QueryIterRoot.create(execCxt);
-        return QueryIterBlockTriples.create(input, bgp, execCxt);
+        return PatternMatchData.execute(graph, bgp, input, null, execCxt);
     }
-    
+
     private static Function<Row<Node>, Binding> rowToBinding = new Function<Row<Node>, Binding>(){
         @Override
         public Binding apply(Row<Node> row) {
@@ -170,31 +169,31 @@ public class OpExecLib {
 //            BindingMap b = BindingFactory.create();
 //            for ( Var v : row.vars() ) {
 //                Node n = row.get(v);
-//                b.add(v, n); 
+//                b.add(v, n);
 //            }
 //            return b;
         }
     };
-    
+
     public static QueryIterator apply(RowList<Node> results, ExecutionContext execCxt) {
         Iterator<Binding> bIter = Iter.map(results.iterator(), rowToBinding);
-        return new QueryIterPlainWrapper(bIter, execCxt);
+        return QueryIterPlainWrapper.create(bIter, execCxt);
     }
-    
-    /** Triples to tuples */ 
+
+    /** Triples to tuples */
     public static List<Tuple<Node>> convertTriplesToTuples(List<Triple> iter)  {
         return iter.stream().map(tripleToTuple).collect(Collectors.toList());
     }
-    
+
     public static Iterator<Tuple<Node>> convertTriplesToTuples(Iterator<Triple> iter)  {
         return Iter.map(iter, tripleToTuple);
     }
-    
-    /** Quads to tuples */ 
+
+    /** Quads to tuples */
     public static List<Tuple<Node>> convertQuadsToTuples(List<Quad> iter)  {
         return iter.stream().map(quadToTuple).collect(Collectors.toList());
     }
-    
+
     /** Quads to tuples */
     public static Iterator<Tuple<Node>> convertQuadsToTuples(Iterator<Quad> iter)  {
         return Iter.map(iter, quadToTuple);
@@ -209,7 +208,7 @@ public class OpExecLib {
     public static Iterator<Tuple<Slot<Node>>> convertTriplesToSlots(Iterator<Triple> iter)  {
         return Iter.map(iter, tripleToTupleSlot);
     }
-    
+
     /** Quads to tuples of slots */
     public static List<Tuple<Slot<Node>>> convertQuadsToSlots(List<Quad> iter)  {
         return iter.stream().map(quadToTupleSlot).collect(Collectors.toList());
@@ -219,9 +218,9 @@ public class OpExecLib {
     public static Iterator<Tuple<Slot<Node>>> convertQuadsToSlots(Iterator<Quad> iter)  {
         return Iter.map(iter, quadToTupleSlot);
     }
-    
+
     private static Slot<Node> nodeToSlot(Node n) {
-        if ( Var.isVar(n)) 
+        if ( Var.isVar(n))
             return Slot.createVarSlot(Var.alloc(n));
         else
             return Slot.createTermSlot(n);
@@ -251,16 +250,16 @@ public class OpExecLib {
         public Triple apply(Tuple<Node> tuple) {
             if ( tuple.len() != 3 )
                 throw new ARQInternalErrorException("Attmpt to convert a tuple of length "+tuple.len()+" to a triple");
-            return Triple.create(tuple.get(0), tuple.get(1), tuple.get(2)); 
+            return Triple.create(tuple.get(0), tuple.get(1), tuple.get(2));
         }
     };
-    
+
     private static Function<Tuple<Node>, Quad> tupleToQuad = new Function<Tuple<Node>, Quad>(){
         @Override
         public Quad apply(Tuple<Node> tuple) {
             if ( tuple.len() != 4 )
                 throw new ARQInternalErrorException("Attmpt to convert a tuple of length "+tuple.len()+" to a quad");
-            return Quad.create(tuple.get(0), tuple.get(1), tuple.get(2), tuple.get(3)); 
+            return Quad.create(tuple.get(0), tuple.get(1), tuple.get(2), tuple.get(3));
         }
     };
 

@@ -17,12 +17,12 @@
 
 package org.seaborne.dboe.engine;
 
+import org.apache.jena.tdb2.TDB2;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.seaborne.dboe.engine.join.TS_Join;
 import org.seaborne.dboe.engine.tdb.TS_Engine2;
-import org.apache.jena.tdb2.TDB2;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {

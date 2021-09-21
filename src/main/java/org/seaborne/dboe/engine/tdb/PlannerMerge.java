@@ -26,11 +26,11 @@ import java.util.Set;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.tdb2.store.NodeId;
+import org.apache.jena.tdb2.store.tupletable.TupleIndex;
 import org.seaborne.dboe.engine.PhysicalPlan;
 import org.seaborne.dboe.engine.Slot;
 import org.seaborne.dboe.engine.Step;
-import org.apache.jena.tdb2.store.NodeId;
-import org.apache.jena.tdb2.store.tupletable.TupleIndex;
 
 public class PlannerMerge {
     // --- Merge

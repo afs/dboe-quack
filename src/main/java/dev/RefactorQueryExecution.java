@@ -97,6 +97,6 @@ public class RefactorQueryExecution
             vars = Var.varNames(OpVars.visibleVars(op));
 
         ResultSet results = ResultSetFactory.create(plan.iterator(), vars);
-        QueryExecUtils.outputResultSet(results, null, outputFormat);
+        QueryExecUtils.outputResultSet(results, null, outputFormat, System.out);
     }
 }

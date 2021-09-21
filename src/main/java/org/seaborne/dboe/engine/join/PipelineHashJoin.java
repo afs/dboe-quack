@@ -17,12 +17,13 @@
 
 package org.seaborne.dboe.engine.join;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.jena.atlas.iterator.IteratorSlotted;
 import org.apache.jena.atlas.lib.SetUtils;
-import org.seaborne.dboe.engine.*;
 import org.apache.jena.sparql.core.Var;
+import org.seaborne.dboe.engine.*;
 
 /** Symmetric hash join that can read from either inputs */  
 public class PipelineHashJoin {

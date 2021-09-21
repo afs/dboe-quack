@@ -30,11 +30,11 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.tdb2.store.NodeId;
+import org.apache.jena.tdb2.store.nodetable.NodeTable;
 import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.RowBuilder;
 import org.seaborne.dboe.engine.Slot;
-import org.apache.jena.tdb2.store.NodeId;
-import org.apache.jena.tdb2.store.nodetable.NodeTable;
 
 public class ELibTDB {
     public static List<Tuple<Slot<NodeId>>> convertTriples(List<Triple> triples, NodeTable nodeTable) {

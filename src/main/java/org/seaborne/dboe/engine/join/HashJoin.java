@@ -22,10 +22,9 @@ import java.util.Set;
 
 import org.apache.jena.atlas.iterator.IteratorSlotted;
 import org.apache.jena.atlas.lib.SetUtils;
-import org.apache.jena.atlas.logging.*;
-import org.seaborne.dboe.engine.*;
-
+import org.apache.jena.atlas.logging.Log;
 import org.apache.jena.sparql.core.Var;
+import org.seaborne.dboe.engine.*;
 
 /** General hash join (creates the probe table from the left hand side) */
 public class HashJoin

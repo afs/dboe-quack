@@ -23,10 +23,9 @@ import java.util.Set;
 
 import org.apache.jena.atlas.iterator.Iter;
 import org.apache.jena.atlas.logging.Log;
+import org.apache.jena.sparql.core.Var;
 import org.seaborne.dboe.engine.Row;
 import org.seaborne.dboe.engine.RowList;
-
-import org.apache.jena.sparql.core.Var;
 
 public class RowListBase<X> implements RowList<X>
 {

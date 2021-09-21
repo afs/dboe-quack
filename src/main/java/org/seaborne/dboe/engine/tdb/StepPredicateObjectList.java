@@ -22,35 +22,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.jena.atlas.iterator.RepeatApplyIterator;
+import migrate.RepeatApplyIterator;
 import org.apache.jena.atlas.lib.InternalErrorException;
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.tdb2.store.NodeId;
 import org.seaborne.dboe.engine.*;
 import org.seaborne.dboe.engine.access.AccessorBase;
 import org.seaborne.dboe.engine.row.RowBuilderBase;
-import org.apache.jena.tdb2.store.NodeId;
 
 /** Get a number of predicate-objects, all with the same subject (the same variable or the same term) . */
 public class StepPredicateObjectList implements Step<NodeId> {
-    
+
     private final PredicateObjectList<NodeId> predObjs;
     private final AccessorTDB accessor;
-    
-    private boolean multipleSamePredicate = false; 
-    
+
+    private boolean multipleSamePredicate = false;
+
     public StepPredicateObjectList(Slot<NodeId> graph, Slot<NodeId> subject, AccessorTDB accessor) {
         predObjs = new PredicateObjectList<>(graph, subject);
         this.accessor = accessor;
     }
-    
+
     public void add(Slot<NodeId> p, Slot<NodeId> o) {
         if ( p.isVar() )
             throw new InternalErrorException();
         predObjs.add(p, o);
     }
-    
+
     /** Get subject for this predicate-object list */
     public Slot<NodeId> getSubject() {
         return predObjs.getSubject();
@@ -61,16 +61,16 @@ public class StepPredicateObjectList implements Step<NodeId> {
         return predObjs.getGraph();
     }
 
-    public static boolean UseNaiveExecution = false; 
-    
+    public static boolean UseNaiveExecution = false;
+
     @Override
     public RowList<NodeId> execute(RowList<NodeId> input) {
         // Very simple execution that should get the right answers reliably.
         if ( UseNaiveExecution )
             return executeUnwind(input);
-        
+
         if ( predObjs.isEmpty() )
-            return input; 
+            return input;
 
         if ( predObjs.size() == 1 ) {
             Tuple<Slot<NodeId>> tuple = predObjs.createTupleSlot(0);
@@ -100,7 +100,7 @@ public class StepPredicateObjectList implements Step<NodeId> {
             return RowLib.createRowList(vars, iter);
         }
     }
-    
+
     private Iterator<Row<NodeId>> executePredObjList(PredicateObjectList<NodeId> predObjs2) {
         return accessor.fetch(predObjs2);
     }
@@ -118,7 +118,7 @@ public class StepPredicateObjectList implements Step<NodeId> {
     private static RowList<NodeId> createRowList(Set<Var> vars, List<Row<NodeId>> rowList) {
         return RowLib.createRowList(vars, rowList.iterator());
     }
-        
+
     /** Utility to execute by converting to a list of one-steps and executing.
      * Useful for testing.
      */
@@ -133,7 +133,7 @@ public class StepPredicateObjectList implements Step<NodeId> {
         if ( getGraph() != null )
             buff.append(str(getGraph())).append("/");
         buff.append(getSubject());
-        
+
         for ( int i = 0; i < predObjs.size(); i ++ ) {
             buff.append(" ");
             NodeId p = predObjs.getPredicate(i);

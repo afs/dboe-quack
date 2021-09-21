@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.jena.atlas.iterator.Iter;
 import org.apache.jena.atlas.lib.NotImplemented;
-
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.*;

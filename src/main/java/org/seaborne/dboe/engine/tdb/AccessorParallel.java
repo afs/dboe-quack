@@ -27,12 +27,12 @@ import org.apache.jena.atlas.iterator.IteratorSlotted;
 import org.apache.jena.atlas.lib.InternalErrorException;
 import org.apache.jena.atlas.lib.tuple.Tuple;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.tdb2.store.NodeId;
 import org.seaborne.dboe.engine.*;
 import org.seaborne.dboe.engine.access.AccessData;
 import org.seaborne.dboe.engine.access.AccessRows;
 import org.seaborne.dboe.engine.explain.Explain2;
 import org.seaborne.dboe.engine.row.RowBase;
-import org.apache.jena.tdb2.store.NodeId;
 
 public class AccessorParallel extends AccessorTDB {
 

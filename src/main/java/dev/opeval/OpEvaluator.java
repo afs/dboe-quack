@@ -19,8 +19,6 @@ package dev.opeval;
 
 import org.apache.jena.atlas.lib.NotImplemented;
 import org.apache.jena.atlas.logging.Log;
-import org.seaborne.dboe.engine.general.OpExecLib;
-
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.ARQ;
 import org.apache.jena.sparql.algebra.Op;
@@ -33,6 +31,7 @@ import org.apache.jena.sparql.engine.iterator.QueryIterDistinguishedVars;
 import org.apache.jena.sparql.engine.iterator.QueryIterRoot;
 import org.apache.jena.sparql.engine.main.OpExecutor;
 import org.apache.jena.sparql.engine.ref.Evaluator;
+import org.seaborne.dboe.engine.general.OpExecLib;
 
 /**
  * Evaluator as a Tree.

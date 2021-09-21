@@ -20,10 +20,10 @@ package quack;
 import java.util.Objects;
 
 import arq.cmdline.CmdARQ;
-import jena.cmd.ArgDecl;
-import jena.cmd.CmdException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.atlas.logging.LogCtl;
+import org.apache.jena.cmd.ArgDecl;
+import org.apache.jena.cmd.CmdException;
 import org.apache.jena.dboe.base.file.Location;
 import org.apache.jena.query.ARQ;
 import org.apache.jena.riot.RIOT;
@@ -35,15 +35,15 @@ import org.slf4j.LoggerFactory;
  * Copy a TDB index.
  * <pre>
      tdbindexcopy location1[name1] location2[name2]
-     tdbindexcopy --loc location name1 name2 
-   </pre>  
+     tdbindexcopy --loc location name1 name2
+   </pre>
  */
 public class tdbindexcopy extends CmdARQ {
     static { LogCtl.setLogging(); }
     static Logger log = LoggerFactory.getLogger(tdbindexcopy.class);
-    
+
     static final ArgDecl argLocation = new ArgDecl(true, "loc", "location");
-    
+
     static public void main(String... argv) {
         //TDB.setOptimizerWarningFlag(false);
         new tdbindexcopy(argv).mainRun();
@@ -61,18 +61,18 @@ public class tdbindexcopy extends CmdARQ {
     protected String getSummary() {
         return getCommandName() + "[ -loc DIR srcIndex] destIndex |  location1/name1 location2/name2 ]";
     }
-    
+
     IndexRef idx1 = null;
     IndexRef idx2 = null;
-    
+
     @Override
     protected void processModulesAndArgs() {
         if ( super.getNumPositional() != 2 )
             throw new CmdException("location1/name1 location2/name2 or --loc= name1 name2");
-        
+
         String x1 = super.getPositionalArg(0);
         String x2 = super.getPositionalArg(1);
-        
+
         if ( super.contains(argLocation) ) {
             Location loc = Location.create(super.getValue(argLocation));
             idx1 = new IndexRef(loc, x1);
@@ -81,23 +81,23 @@ public class tdbindexcopy extends CmdARQ {
             idx1 = IndexRef.parse(x1);
             idx2 = IndexRef.parse(x2);
         }
-        
+
         if ( Objects.equals(idx1, idx2) )
             throw new CmdException("Can't copy an index to itself: "+idx1+" -> "+idx2);
-        
+
         if ( idx1.getIndexName().length() != idx2.getIndexName().length() ) {
             throw new CmdException("Indexes must the same lengh : "+idx1.getIndexName()+" -> "+idx2.getIndexName());
         }
         int N = idx1.getIndexName().length();
         if ( N != 3 && N != 4 )
             throw new CmdException("Indexes must 3 or 4 in length : "+idx1.getIndexName()+" -> "+idx2.getIndexName());
-        
+
         if ( ! idx1.exists() )
             throw new CmdException("No such index: "+ idx1);
         if ( idx2.exists() )
             throw new CmdException("Already exists: "+ idx2+ " (delete first to copy)" );
     }
-    
+
     @Override
     protected void exec() {
         throw new NotImplementedException(cmdName);
@@ -108,20 +108,20 @@ public class tdbindexcopy extends CmdARQ {
 //
 //        String srcIndexName = idx1.getIndexName();
 //        String destIndexName = idx2.getIndexName();
-//        
+//
 //        int N = idx1.getIndexName().length();
 //        String primaryIndexName;
 //
 //        if ( N == 3 )
 //            primaryIndexName = Names.primaryIndexTriples;
-//        else if ( N == 4 )         
+//        else if ( N == 4 )
 //            primaryIndexName = Names.primaryIndexQuads;
 //        else
 //            throw new InternalErrorException("Index length");
-//        
+//
 //        srcIndexName = srcIndexName.toUpperCase();
 //        destIndexName = destIndexName.toUpperCase();
-//        
+//
 //        Location location1 = idx1.getLocation();
 //        Location location2 = idx2.getLocation();
 //

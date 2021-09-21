@@ -17,9 +17,9 @@
 
 package org.seaborne.dboe.engine;
 
+import org.apache.jena.tdb2.solver.TS_SolverTDB;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.apache.jena.tdb2.solver.TS_SolverTDB;
 
 /** TDB tests run directly here as appropriate */
 

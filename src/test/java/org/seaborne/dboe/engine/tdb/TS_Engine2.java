@@ -17,16 +17,15 @@
 
 package org.seaborne.dboe.engine.tdb;
 
+import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
+import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
+import org.apache.jena.tdb2.sys.SystemTDB;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.seaborne.dboe.engine.Quack;
-
-import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
-import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
-import org.apache.jena.tdb2.sys.SystemTDB;
 
 @RunWith(Suite.class)
 @SuiteClasses( {

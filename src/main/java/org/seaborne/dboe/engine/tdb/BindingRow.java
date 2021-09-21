@@ -19,15 +19,14 @@ package org.seaborne.dboe.engine.tdb;
 
 import java.util.Iterator;
 
-import org.apache.jena.riot.out.NodeFmtLib;
-import org.seaborne.dboe.engine.Row;
-
 import org.apache.jena.graph.Node;
+import org.apache.jena.riot.out.NodeFmtLib;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.sparql.engine.binding.BindingBase;
 import org.apache.jena.tdb2.store.NodeId;
 import org.apache.jena.tdb2.store.nodetable.NodeTable;
+import org.seaborne.dboe.engine.Row;
 
 final
 public class BindingRow extends BindingBase {
@@ -79,7 +78,7 @@ public class BindingRow extends BindingBase {
     }
     
     @Override
-    protected void format(StringBuffer sbuff, Var var)
+    protected void fmtVar(StringBuffer sbuff, Var var)
     {
         NodeId id = row.get(var);
         String extra = "";

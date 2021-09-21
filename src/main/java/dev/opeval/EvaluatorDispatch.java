@@ -17,7 +17,6 @@
 
 package dev.opeval;
 
-import org.apache.jena.atlas.lib.NotImplemented;
 import org.apache.jena.sparql.ARQInternalErrorException;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitor;
@@ -76,12 +75,6 @@ public class EvaluatorDispatch implements OpVisitor
     @Override
     public void visit(OpPath opPath) {
         result = evaluator.execute(opPath);
-    }
-
-    @Override
-    public void visit(OpFind opFind) {
-        throw new NotImplemented("Quack-EvaluatorDispatchvisiit(OpFind)");
-        //result = evaluator.execute(opFind);
     }
 
     @Override

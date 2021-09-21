@@ -20,9 +20,8 @@ package org.seaborne.dboe.engine.row;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.seaborne.dboe.engine.Row;
-
 import org.apache.jena.sparql.core.Var;
+import org.seaborne.dboe.engine.Row;
 
 /* A row of zero variables */ 
 public class RowIdentity<X> implements Row<X>  {
