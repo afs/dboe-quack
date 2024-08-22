@@ -48,7 +48,7 @@ import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderProc;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
 import org.apache.jena.sparql.expr.ExprList;
-import org.apache.jena.tdb.solver.OpExecutorTDB1;
+import org.apache.jena.tdb1.solver.OpExecutorTDB1;
 import org.apache.jena.tdb2.store.DatasetGraphTDB;
 import org.apache.jena.tdb2.store.GraphTDB;
 import org.apache.jena.tdb2.store.NodeId;
@@ -236,7 +236,7 @@ public class OpExecutorQuackTDB extends OpExecutorTDBBase
             builder.reset();
             Row<NodeId> row = ELibTDB.convertToRow(input, accessor.getNodeTable(), builder);
             Set<Var> vars = Collections.emptySet(); // Reuse?
-            rows = RowLib.createRowList(vars, Iter.singleton(row));
+            rows = RowLib.createRowList(vars, Iter.singletonIterator(row));
         }
 
         RowList<NodeId> results = executePlan(plan, rows);

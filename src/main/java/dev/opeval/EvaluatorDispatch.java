@@ -17,6 +17,7 @@
 
 package dev.opeval;
 
+import org.apache.jena.atlas.lib.NotImplemented;
 import org.apache.jena.sparql.ARQInternalErrorException;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitor;
@@ -105,6 +106,11 @@ public class EvaluatorDispatch implements OpVisitor
     @Override
     public void visit(OpLeftJoin opLeftJoin) {
         result = evaluator.execute(opLeftJoin);
+    }
+
+    @Override
+    public void visit(OpLateral opLateral) {
+        throw new NotImplemented(this.getClass().getSimpleName()+".lateral");
     }
 
     @Override

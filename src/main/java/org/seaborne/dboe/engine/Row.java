@@ -21,11 +21,11 @@ import java.util.Collection;
 
 import org.apache.jena.sparql.core.Var;
 
-public interface Row<X>  { 
+public interface Row<X>  {
     X get(Var key);
     boolean contains(Var v);
     Collection<Var> vars();
     boolean isEmpty();
-    /** Return true is definitely an identity row - if not sure, return false */ 
+    /** Return true if this is definitely an identity row - if not sure, return false */
     boolean isIdentity();
 }

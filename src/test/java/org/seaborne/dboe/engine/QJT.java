@@ -40,7 +40,7 @@ public class QJT // Quack Join Test
 
         if ( rows1.size() != rows2.size() )
             return false;
-        
+
         for ( int i = 0; i < rows1.size(); i++) {
             Row<X> r1 = rows1.get(i);
             for ( int j = 0; j < rows2.size(); j++) {
@@ -54,7 +54,7 @@ public class QJT // Quack Join Test
         }
         return rows2.size() == 0;
     }
-     
+
     public static <X> boolean equal(Row<X> row1, Row<X> row2) {
         if ( row1 == null && row2 == null )
             return true;
@@ -62,7 +62,7 @@ public class QJT // Quack Join Test
             return false;
         if ( row1 == null && row2 != null )
             return false;
-        
+
         Collection<Var> vars1 = row1.vars();
         Collection<Var> vars2 = row2.vars();
         if ( ! vars1.equals(vars2) )
@@ -75,7 +75,7 @@ public class QJT // Quack Join Test
         }
         return true;
     }
-    
+
     /** Create some test data : a table of (var, integers) */
     public static RowList<Integer> parseTableInt(String... s) {
         return parseTable(item2Int, s);
@@ -86,9 +86,9 @@ public class QJT // Quack Join Test
         return parseTable(item2String, s);
     }
 
-    private static <X> RowList<X> parseTable(ItemParser<X> parser, String... s) {        
+    private static <X> RowList<X> parseTable(ItemParser<X> parser, String... s) {
         RowListBuilder<X> builder = new RowListBuilderBase<>();
-        
+
         String x = StrUtils.strjoinNL(s);
         Item item = SSE.parse(x);
 
@@ -108,17 +108,17 @@ public class QJT // Quack Join Test
         Item item = SSE.parse(x);
         ItemList list = item.getList();
         BuilderLib.checkTag(list, "key");
-        JoinKey.Builder builder = new JoinKey.Builder(); 
+        JoinKey.Builder builder = new JoinKey.Builder();
         list = list.cdr();
         for (Item e : list) {
             Var v = Var.alloc(e.getNode());
             builder.add(v);
         }
-        
+
         return builder.build();
     }
-    
-    
+
+
     /** Create some test data : a row of (var, string) */
     public static Row<Integer> parseRowInt(String... s) {
         return parseRow(item2Int, s);
@@ -134,11 +134,11 @@ public class QJT // Quack Join Test
         Item item = SSE.parse(x);
         return  parseRow(parser, item);
     }
-    
+
     private static <X> Row<X> parseRow(ItemParser<X> parser, Item item) {
         ItemList list = item.getList();
         RowBuilder<X> builder = new RowBuilderBase<X>();
-        
+
         BuilderLib.checkTag(list, "row");
         list = list.cdr();
         for (Item e : list) {
@@ -154,19 +154,19 @@ public class QJT // Quack Join Test
         X x = parser.parse(e.getList().get(1));
         return Pair.create(var, x);
     }
-    
+
     interface ItemParser<X> { X parse(Item item) ; }
-    
+
     private static ItemParser<Integer> item2Int = new ItemParser<Integer>() {
         @Override
-        public Integer parse(Item item) { return (int)item.asInteger(); }
+        public Integer parse(Item item) { return (int)item.asLong(); }
     };
-            
+
     private static ItemParser<String> item2String = new ItemParser<String>() {
         @Override
         public String parse(Item item) { return item.getNode().getLiteralLexicalForm(); }
     };
 
-    
+
 }
 

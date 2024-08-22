@@ -32,7 +32,7 @@ import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
 import org.apache.jena.sparql.resultset.ResultSetCompare;
 import org.apache.jena.system.Txn;
-import org.apache.jena.tdb.solver.OpExecutorTDB1;
+import org.apache.jena.tdb1.solver.OpExecutorTDB1;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.tdb2.sys.SystemTDB;
 import org.junit.*;
@@ -50,7 +50,7 @@ public class TestPatterns extends Assert
     public static Collection<Object[]> data()
     {
         return Arrays.asList(new Object[][] {
-            { "OpExecutorTDB", OpExecutorTDB1.OpExecFactoryTDB }
+            { "OpExecutorTDB1", OpExecutorTDB1.OpExecFactoryTDB }
             ,
             { "OpExecutorQuackTDB", OpExecutorQuackTDB.factorySubstitute}
             ,

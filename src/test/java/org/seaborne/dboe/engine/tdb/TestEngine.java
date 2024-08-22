@@ -43,21 +43,21 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.seaborne.dboe.engine.Quack;
 
-/** Basic testing of OpExecutorQuackTDB, mainly to make sure its called. 
+/** Basic testing of OpExecutorQuackTDB, mainly to make sure its called.
  *  More complete testing happens when the full TDB test suite is run with this engine.
  */
 
 public class TestEngine extends Assert {
-    @BeforeClass public static void beforeClass() { Quack.init(); } 
-    
+    @BeforeClass public static void beforeClass() { Quack.init(); }
+
     private static final String DIR = "testing/EngineQ";
     private static Location loc = Location.mem();
-    
+
     private static Dataset create(String datafile) {
         // Mangle indexes.
         String x = Names.tripleIndexes[2];
         Names.tripleIndexes[2] = "PSO";
-        try { 
+        try {
             Dataset ds = TDB2Factory.connectDataset(loc);
             // @before/@after.
             if ( datafile != null )
@@ -69,36 +69,36 @@ public class TestEngine extends Assert {
             Names.tripleIndexes[2] = x;
         }
     }
-    
+
     @Test public void exec1() {
-        test("SELECT * { }", "data1.ttl"); 
+        test("SELECT * { }", "data1.ttl");
     }
 
     @Test public void exec2() {
-        test("SELECT * { ?x :k ?k }", "data1.ttl"); 
+        test("SELECT * { ?x :k ?k }", "data1.ttl");
     }
 
     @Test public void exec3() {
-        test("SELECT * { ?x :k ?k . ?x :p ?v . }", "data1.ttl"); 
+        test("SELECT * { ?x :k ?k . ?x :p ?v . }", "data1.ttl");
     }
 
     @Test public void exec4() {
-        test("SELECT * { ?x :k ?k . ?x :p ?v . :s1 :p ?z }", "data1.ttl"); 
+        test("SELECT * { ?x :k ?k . ?x :p ?v . :s1 :p ?z }", "data1.ttl");
     }
-    
+
     @Test public void exec5() {
         // Avoid equality optimziation.
-        test("SELECT * { ?s :p :o . ?s :p ?v . FILTER( ?v > 122 && ?v < 124 ) }", "data1.ttl"); 
+        test("SELECT * { ?s :p :o . ?s :p ?v . FILTER( ?v > 122 && ?v < 124 ) }", "data1.ttl");
     }
 
     @Test public void exec6() {
-        test("SELECT * { ?s :p ?v . ?s :p :o . FILTER( ?v > 122 && ?v < 124 ) }", "data1.ttl"); 
+        test("SELECT * { ?s :p ?v . ?s :p :o . FILTER( ?v > 122 && ?v < 124 ) }", "data1.ttl");
     }
-    
+
     // Op tests only?
-    
+
     // Test with OpSeq to test the reorder execution.
-    
+
     @Test public void exec10() {
         testOp("(sequence (bgp (?s :p ?v))  (bgp (?s :p :o)) )", "data1.ttl");
     }
@@ -135,31 +135,31 @@ public class TestEngine extends Assert {
     private void test(String queryString, String datafile) {
         Dataset ds = create(datafile);
         Dataset dsMem = RDFDataMgr.loadDataset(DIR+"/"+datafile);
-        try { 
+        try {
             Txn.executeRead(ds, ()->test(queryString, ds, dsMem));
         } finally { TL.expel(ds); }
     }
-    
+
     private void test(String queryString, Dataset ds, Dataset dsMem) {
-        
+
         OpExecutorFactory origFactory = QC.getFactory(ds.getContext());
-        
+
         Query q = QueryFactory.create("PREFIX : <http://example/> \n"+queryString);
-        
+
         ResultSetRewindable rsMem = exec(dsMem, q);
 
         // Execute Quack
         ResultSetRewindable rsTDB = exec(ds, q);
-    
-        QC.setFactory(ds.getContext(), OpExecutorQuackTDB.factorySubstitute); 
+
+        QC.setFactory(ds.getContext(), OpExecutorQuackTDB.factorySubstitute);
         ResultSetRewindable rsQu = exec(ds, q);
         QC.setFactory(ds.getContext(), origFactory);
-        
+
         if ( PRINT ) {
             System.out.println(q);
             ResultSetFormatter.out(rsQu);
         }
-        
+
         boolean b = ResultSetCompare.equalsByTerm(rsTDB, rsQu);
         if ( ! b ) {
             PrintStream out = System.out;
@@ -171,7 +171,7 @@ public class TestEngine extends Assert {
             out.println("----");
             fail("Results not equal (TDB, Lizard)");
         }
-        
+
         b = ResultSetCompare.equalsByTerm(rsMem, rsQu);
         if ( ! b ) {
             PrintStream out = System.out;
@@ -184,7 +184,7 @@ public class TestEngine extends Assert {
             fail("Results not equal (Memory, Lizard)");
         }
     }
-    
+
     private void testOp(String opString, String datafile) {
         DatasetGraph dsg = create(datafile).asDatasetGraph();
         DatasetGraph dsgMem = RDFDataMgr.loadDatasetGraph(DIR + "/" + datafile);
@@ -194,7 +194,7 @@ public class TestEngine extends Assert {
         }
         finally { TL.expel(dsg); }
     }
-    
+
     private void testOp(Op op, DatasetGraph dsg, DatasetGraph dsgMem) {
         ResultSetRewindable rsMem = exec(dsgMem, op);
         ResultSetRewindable rsQu = exec(dsg, op);
@@ -218,12 +218,12 @@ public class TestEngine extends Assert {
             return rs;
         }
     }
-    
+
     private ResultSetRewindable exec(DatasetGraph ds, Op op) {
         QueryIterator qIter = Algebra.exec(op, ds);
         List<String> vars = Var.varNames(OpVars.visibleVars(op));
-        ResultSetRewindable rs = ResultSetFactory.makeRewindable(new ResultSetStream(vars, null, qIter));
-        return rs; 
+        ResultSetRewindable rs = ResultSetFactory.makeRewindable(ResultSetStream.create(vars, null, qIter));
+        return rs;
     }
 
 }

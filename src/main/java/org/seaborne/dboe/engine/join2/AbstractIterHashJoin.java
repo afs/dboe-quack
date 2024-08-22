@@ -30,7 +30,7 @@ import org.seaborne.dboe.engine.join.HashProbeTable;
 import org.seaborne.dboe.engine.join.Hasher;
 
 /** Hash join algorithm
- *  
+ *
  * This code materializes one input into the probe table
  * then hash joins the other input from the stream side.
  */
@@ -41,36 +41,36 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
     protected long s_countResults         = 0;       // Overall result size.
     protected long s_trailerResults       = 0;       // Results from the trailer iterator.
     // See also stats in the probe table.
-    
+
     protected final JoinKey               joinKey;
     protected final HashProbeTable<X>     hashTable;
 
     private Iterator<Row<X>>           iterStream;
     private Row<X>                     rowStream       = null;
     private Iterator<Row<X>>           iterCurrent;
-    private boolean                     yielded;       // Flag to note when current probe causes a result. 
+    private boolean                     yielded;       // Flag to note when current probe causes a result.
     // Hanlde any "post join" additions.
     private Iterator<Row<X>>           iterTail        = null;
-    
+
     enum Phase { INIT, HASH , STREAM, TRAILER, DONE }
     protected Phase state = Phase.INIT;
     private final RowBuilder<X> builder;
-    
+
     protected AbstractIterHashJoin(JoinKey joinKey, RowList<X> probe, RowList<X> stream, Hasher<X> hasher, RowBuilder<X> builder) {
         Iterator<Row<X>> probeIter = probe.iterator();
         Iterator<Row<X>> streamIter = stream.iterator();
         if ( joinKey == null )
             joinKey = JoinKey.createVarKey(probe.vars(), stream.vars());
-        
+
         this.joinKey = joinKey;
         this.iterStream = streamIter;
         this.hashTable = new HashProbeTable<>(hasher, joinKey);
         this.iterCurrent = null;
         this.builder = builder;
         buildHashTable(probeIter);
-        
+
     }
-        
+
     private void buildHashTable(Iterator<Row<X>> iter1) {
         state = Phase.HASH;
         for (; iter1.hasNext();) {
@@ -84,7 +84,7 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
 
     @Override
     protected boolean hasMore() {
-        if ( isFinished() ) 
+        if ( isFinished() )
             return false;
         return true;
     }
@@ -92,21 +92,21 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
     @Override
     protected Row<X> moveToNext() {
         // iterCurrent is the iterator of entries in the
-        // probe hashed table for the current stream row.     
+        // probe hashed table for the current stream row.
         // iterStream is the stream of incoming rows.
-        
+
         switch ( state ) {
             case DONE : return null;
-            case HASH : 
+            case HASH :
             case INIT :
                 throw new IllegalStateException();
             case TRAILER :
                 return doOneTail();
             case STREAM :
         }
-        
+
         for(;;) {
-            // Ensure we are processing a row. 
+            // Ensure we are processing a row.
             while ( iterCurrent == null ) {
                 // Move on to the next row from the right.
                 if ( ! iterStream.hasNext() ) {
@@ -121,8 +121,8 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
                 iterCurrent = hashTable.getCandidates(rowStream);
                 yielded = false;
             }
-            
-            // Emit one row using the rightRow and the current matched left rows. 
+
+            // Emit one row using the rightRow and the current matched left rows.
             if ( ! iterCurrent.hasNext() ) {
                 iterCurrent = null;
                 if ( ! yielded ) {
@@ -137,12 +137,12 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
 
             // Nested loop join, only on less.
             //Iterator<Row<X>> iter = nestedLoop(iterCurrent, rowStream);
-            
+
             builder.reset();
             Row<X> rowCurrentProbe = iterCurrent.next();
             Row<X> r = Join.merge(rowCurrentProbe, rowStream, builder);
             Row<X> r2 = null;
-            
+
             if (r != null)
                 r2 = yieldOneResult(rowCurrentProbe, rowStream, r);
             if ( r2 == null ) {
@@ -153,9 +153,8 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
                 return r2;
             }
         }
-    }    
-    
-    
+    }
+
     private Row<X> doOneTail() {
         // Only in TRAILING
         if ( iterTail.hasNext() ) {
@@ -168,19 +167,19 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
         iterTail = null;
         return null;
     }
-    
+
     /**
      * Signal about to return a result.
      * @param rowCurrentProbe
      * @param rowStream
      * @param rowResult
-     * @return 
+     * @return
      */
     protected abstract Row<X> yieldOneResult(Row<X> rowCurrentProbe, Row<X> rowStream, Row<X> rowResult);
 
     /** Signal a row that yields no matches.
      *  This method can return a Row<X> (the outer join case)
-     *  which will then be yielded. {@code yieldOneResult} will <em>not</em> be called. 
+     *  which will then be yielded. {@code yieldOneResult} will <em>not</em> be called.
      * @param rowStream
      * @return
      */
@@ -192,22 +191,22 @@ public abstract class AbstractIterHashJoin<X> extends IteratorSlotted<Row<X>> {
      * @return QueryIterator or null
      */
     protected abstract Iterator<Row<X>> joinFinished();
-        
+
     @Override
     protected void closeIterator() {
         if ( JoinLib.JOIN_EXPLAIN ) {
             String x = String.format(
                          "HashJoin: LHS=%d RHS=%d Results=%d RightMisses=%d MaxBucket=%d NoKeyBucket=%d",
-                         s_countProbe, s_countScan, s_countResults, 
+                         s_countProbe, s_countScan, s_countResults,
                          hashTable.s_countScanMiss, hashTable.s_maxBucketSize, hashTable.s_noKeyBucketSize);
             System.out.println(x);
         }
-        hashTable.clear(); 
+        hashTable.clear();
     }
 
 //    @Override
 //    protected void requestSubCancel() {
-//        hashTable.clear(); 
+//        hashTable.clear();
 //    }
 }
 

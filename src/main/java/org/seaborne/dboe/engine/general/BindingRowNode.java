@@ -18,6 +18,8 @@
 package org.seaborne.dboe.engine.general;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.apache.jena.graph.Node;
@@ -42,6 +44,13 @@ public final class BindingRowNode implements Binding {
     @Override
     public Iterator<Var> vars() {
         return row.vars().iterator();
+    }
+
+    @Override
+    final public Set<Var> varsMentioned() {
+        Set<Var> result = new LinkedHashSet<>();
+        vars().forEachRemaining(result::add);
+        return result;
     }
 
     @Override

@@ -22,13 +22,13 @@ import java.util.*;
 import org.apache.jena.atlas.iterator.Iter;
 import org.apache.jena.atlas.lib.SetUtils;
 import org.apache.jena.atlas.logging.FmtLog;
-import org.apache.jena.ext.com.google.common.collect.ArrayListMultimap;
-import org.apache.jena.ext.com.google.common.collect.ListMultimap;
 import org.apache.jena.sparql.core.Var;
 import org.seaborne.dboe.engine.*;
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 
-/** Implmentation of HashJoin that materizes its results and then returns an iterator.
- *  As much a test of the algorithm.  
+/** Implementation of HashJoin that materializes its results and then returns an iterator.
+ *  As much a test of the algorithm.
  */
 public class HashJoinConcrete {
     /** Evaluate and materialize.  This serves to provide a check of the algorithm. */
@@ -40,16 +40,16 @@ public class HashJoinConcrete {
         return hashJoinConcrete(joinKey, left, right, hasher, builder);
     }
 
-    /** HashJoin that materializes the results */ 
-    public static <X> RowList<X> hashJoinConcrete(JoinKey joinKey, RowList<X> left, RowList<X> right, 
+    /** HashJoin that materializes the results */
+    public static <X> RowList<X> hashJoinConcrete(JoinKey joinKey, RowList<X> left, RowList<X> right,
                                                   Hasher<X> hasher , RowBuilder<X> builder) {
         // Assume left smaller than right so hash left
         Set<Var> vars = SetUtils.union(left.vars(), right.vars());
         if ( Quack.JOIN_EXPLAIN ) FmtLog.info(Quack.joinStatsLog, "Phase 1 : "+joinKey);
-        // Phase 1.hasher, 
-        ListMultimap<Object, Row<X>> buckets = ArrayListMultimap.create();  // Approximate sizes
+        // Phase 1.hasher,
+        MultiValuedMap<Object, Row<X>> buckets = MultiMapUtils.newListValuedHashMap();
         long count1 = 0;
-        Iterator<Row<X>> iter1 = left.iterator(); 
+        Iterator<Row<X>> iter1 = left.iterator();
         for (; iter1.hasNext();) {
             Row<X> row1 = iter1.next();
             count1++;
@@ -63,17 +63,17 @@ public class HashJoinConcrete {
         if ( Quack.JOIN_EXPLAIN ) FmtLog.info(Quack.joinStatsLog, "Phase 2");
         long count2 = 0;
         List<Row<X>> results = new ArrayList<>();
-        
+
         // Left table, no overlap.
         Collection<Row<X>> leftNoKey = buckets.get(JL.noKeyHash);
-        
+
         Iterator<Row<X>> iter2 = right.iterator();
         for (; iter2.hasNext();) {
             Row<X> row2 = iter2.next();
             count2 ++;
             Object longHash = JL.hash(hasher, joinKey, row2);
             if ( Quack.JOIN_EXPLAIN ) FmtLog.info(Quack.joinStatsLog, "Hash = 0x%04X", longHash);
-            
+
             if ( longHash == JL.noKeyHash ) {
                 // No key on the right.
                 // Need to cross product with the left.
@@ -88,19 +88,19 @@ public class HashJoinConcrete {
                 }
                 continue;
             }
-            
-            Iterator<Row<X>> iter; 
+
+            Iterator<Row<X>> iter;
             if ( longHash == JL.noKeyHash ) {
                 // No shared vars with the JoinKey; iterator over the whole of the left.
                 iter = buckets.values().iterator();
             } else {
-                // Get all rows matching with the hash from the right row. 
+                // Get all rows matching with the hash from the right row.
                 Collection<Row<X>> sameKey = buckets.get(longHash);    // Maybe null.
                 iter = ( sameKey == null ) ? null : sameKey.iterator();
                 if ( leftNoKey != null )
                     iter = Iter.concat(iter, leftNoKey.iterator());
             }
-            
+
             if ( iter != null ) {
                 for (; iter.hasNext(); ) {
                     Row<X> rLeft = iter.next();
@@ -111,10 +111,10 @@ public class HashJoinConcrete {
                 }
             }
         }
-        
+
         long count3 = results.size();
         if ( Quack.JOIN_EXPLAIN ) FmtLog.info(Quack.joinStatsLog, "%d : %d : %d", count1, count2, count3);
-    
+
         return RowLib.createRowList(vars, results.iterator());
     }
 

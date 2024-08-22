@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jena.atlas.iterator.Iter;
-import org.apache.jena.ext.com.google.common.collect.ArrayListMultimap;
-import org.apache.jena.ext.com.google.common.collect.ListMultimap;
+import org.apache.commons.collections4.MultiMapUtils;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.seaborne.dboe.engine.JoinKey;
 import org.seaborne.dboe.engine.Row;
 
@@ -38,16 +38,16 @@ public class HashProbeTable<X> {
     public /*package*/ long s_countScanMiss        = 0;
 
     private final List <Row<X>> noKeyBucket = new ArrayList<>();
-    private final ListMultimap<Object, Row<X>> buckets;
+    private final MultiValuedMap<Object, Row<X>> buckets;
     private final Hasher<X> hasher;
     private final JoinKey   joinKey;
-    
+
     public HashProbeTable(Hasher<X> hasher, JoinKey joinKey) {
         this.hasher = hasher;
         this.joinKey = joinKey;
-        buckets = ArrayListMultimap.create();
+        buckets = MultiMapUtils.newListValuedHashMap();
     }
-    
+
     public void put(Row<X> row) {
         s_count++;
         Object longHash = JL.hash(hasher, joinKey, row);
@@ -57,7 +57,7 @@ public class HashProbeTable<X> {
         }
         buckets.put(longHash, row);
     }
-    
+
     public Iterator<Row<X>> getCandidates(Row<X> row) {
         Iterator<Row<X>> iter = null;
         Object longHash = JL.hash(hasher, joinKey, row);
@@ -76,7 +76,7 @@ public class HashProbeTable<X> {
         if ( noKeyBucket != null )
             iter = Iter.concat(iter, noKeyBucket.iterator());
         return iter;
-    }                        
+    }
 
     public void stats() {
         long max = 0;
@@ -91,19 +91,19 @@ public class HashProbeTable<X> {
         //s_maxMatchGroup
         // What to do with them?
     }
-    
+
     public Iterator<Row<X>> values() {
         return Iter.concat(buckets.values().iterator(),
                            noKeyBucket.iterator());
     }
-    
+
     // Should not need these operations.
     public Collection<Row<X>> getNoKey$() {
         if ( noKeyBucket == null )
             return null;
         return noKeyBucket;
     }
-    
+
     public Collection<Row<X>> getHashMatch$(Row<X> row) {
         Object longHash = JL.hash(hasher, joinKey, row);
         if ( longHash == JL.noKeyHash )
@@ -111,7 +111,7 @@ public class HashProbeTable<X> {
         Collection<Row<X>> list = buckets.get(longHash);
         return list;
     }
-    
+
     public void clear() {
         buckets.clear();
     }

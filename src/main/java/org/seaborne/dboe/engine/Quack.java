@@ -29,10 +29,12 @@ import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
+import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
 import org.apache.jena.sparql.mgt.Explain.InfoLevel;
 import org.apache.jena.sparql.util.Context;
 import org.apache.jena.sparql.util.MappingRegistry;
 import org.apache.jena.sparql.util.Symbol;
+import org.apache.jena.sys.JenaSystem;
 import org.apache.jena.tdb2.TDB2;
 import org.apache.jena.tdb2.params.StoreParams;
 import org.apache.jena.tdb2.solver.QueryEngineTDB;
@@ -84,6 +86,7 @@ public class Quack {
     // Called by the assembler
 
     public static void init() {
+        JenaSystem.init();
         if ( initialized )
             return;
         Quack.log.info("Quack");
@@ -177,14 +180,14 @@ public class Quack {
     }
 
     public static DatasetGraph createDatasetGraph(Location location, OpExecutorFactory executorFactory) {
-        StoreParams sParams = StoreParams.builder()
+        StoreParams sParams = StoreParams.builder("test")
             // Test to see if POS exists but PSO does not.
             .tripleIndexes(new String[] { Names.primaryIndexTriples, "POS", "PSO", "OSP" })
             //{ primaryIndexQuads, "GPOS", "GOSP", "POSG", "OSPG", "SPOG"};
             .quadIndexes(new String[] { Names.primaryIndexQuads,
                 "GPOS", "GPSO", "GOSP", "POSG", "PSOG", "OSPG", "SPOG"})
             .build();
-        DatasetGraphTDB dsg = StoreConnection.connectCreate(location, sParams).getDatasetGraphTDB();
+        DatasetGraphTDB dsg = StoreConnection.connectCreate(location, sParams, ReorderLib.identity()).getDatasetGraphTDB();
         StoreParams sParams2 = dsg.getStoreParams();
         if ( ! sParams.equals(sParams2) )
             Log.warn(Quack.class, "Location already set up differently");
