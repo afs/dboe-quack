@@ -24,6 +24,7 @@ import org.apache.jena.riot.out.NodeFmtLib;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.sparql.engine.binding.BindingBase;
+import org.apache.jena.sparql.engine.binding.BindingFactory;
 import org.apache.jena.tdb2.store.NodeId;
 import org.apache.jena.tdb2.store.nodetable.NodeTable;
 import org.seaborne.dboe.engine.Row;
@@ -37,15 +38,15 @@ public class BindingRow extends BindingBase {
     public BindingRow(Row<NodeId> row, NodeTable nodeTable) {
         this(null, row, nodeTable);
     }
-    
+
     public BindingRow(Binding parent, Row<NodeId> row, NodeTable nodeTable) {
         super(parent);
         this.row = row;
         this.nodeTable = nodeTable;
     }
-    
+
     public Row<NodeId> getRow() { return row; }
-    
+
     @Override
     protected Iterator<Var> vars1() {
         return row.vars().iterator();
@@ -76,16 +77,20 @@ public class BindingRow extends BindingBase {
             return null;
         return nodeTable.getNodeForNodeId(nid);
     }
-    
+
     @Override
-    protected void fmtVar(StringBuffer sbuff, Var var)
-    {
+    protected void fmtVar(StringBuilder sbuff, Var var) {
         NodeId id = row.get(var);
         String extra = "";
         if ( id != null )
-            extra = "/"+id;
+            extra = "/" + id;
         Node node = get(var);
         String tmp = NodeFmtLib.displayStr(node);
-        sbuff.append("( ?"+var.getVarName()+extra+" = "+tmp+" )");
+        sbuff.append("( ?" + var.getVarName() + extra + " = " + tmp + " )");
+    }
+
+    @Override
+    protected Binding detachWithNewParent(Binding newParent) {
+        return BindingFactory.copy(this);
     }
 }

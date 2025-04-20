@@ -33,7 +33,7 @@ import org.apache.jena.sparql.engine.QueryIterator;
 import org.apache.jena.sparql.engine.ResultSetStream;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
-import org.apache.jena.sparql.resultset.ResultSetCompare;
+import org.apache.jena.sparql.resultset.ResultsCompare;
 import org.apache.jena.sparql.sse.SSE;
 import org.apache.jena.system.Txn;
 import org.apache.jena.tdb2.TDB2Factory;
@@ -160,7 +160,7 @@ public class TestEngine extends Assert {
             ResultSetFormatter.out(rsQu);
         }
 
-        boolean b = ResultSetCompare.equalsByTerm(rsTDB, rsQu);
+        boolean b = ResultsCompare.equalsByTerm(rsTDB, rsQu);
         if ( ! b ) {
             PrintStream out = System.out;
             out.println("---- Different (TDB, Lizard)");
@@ -172,7 +172,7 @@ public class TestEngine extends Assert {
             fail("Results not equal (TDB, Lizard)");
         }
 
-        b = ResultSetCompare.equalsByTerm(rsMem, rsQu);
+        b = ResultsCompare.equalsByTerm(rsMem, rsQu);
         if ( ! b ) {
             PrintStream out = System.out;
             out.println("---- Different (Memory, Lizard)");
@@ -199,7 +199,7 @@ public class TestEngine extends Assert {
         ResultSetRewindable rsMem = exec(dsgMem, op);
         ResultSetRewindable rsQu = exec(dsg, op);
 
-        boolean b = ResultSetCompare.equalsByTerm(rsMem, rsQu);
+        boolean b = ResultsCompare.equalsByTerm(rsMem, rsQu);
         if ( ! b ) {
             PrintStream out = System.out;
             out.println("---- Different (Memory, Quack)");

@@ -17,7 +17,6 @@
 
 package dev.opeval;
 
-import org.apache.jena.atlas.lib.NotImplemented;
 import org.apache.jena.sparql.ARQInternalErrorException;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitor;
@@ -109,16 +108,6 @@ public class EvaluatorDispatch implements OpVisitor
     }
 
     @Override
-    public void visit(OpLateral opLateral) {
-        throw new NotImplemented(this.getClass().getSimpleName()+".lateral");
-    }
-
-    @Override
-    public void visit(OpDiff opDiff) {
-        result = evaluator.execute(opDiff);
-    }
-
-    @Override
     public void visit(OpMinus opMinus) {
         result = evaluator.execute(opMinus);
     }
@@ -126,6 +115,21 @@ public class EvaluatorDispatch implements OpVisitor
     @Override
     public void visit(OpUnion opUnion) {
         result = evaluator.execute(opUnion);
+    }
+
+    @Override
+    public void visit(OpLateral opLateral) {
+        result = evaluator.execute(opLateral);
+    }
+
+        @Override
+    public void visit(OpSemiJoin opSemiJoin) {
+        result = evaluator.execute(opSemiJoin);
+    }
+
+    @Override
+    public void visit(OpAntiJoin opAntiJoin) {
+        result = evaluator.execute(opAntiJoin);
     }
 
     @Override
@@ -217,6 +221,13 @@ public class EvaluatorDispatch implements OpVisitor
     public void visit(OpExtend opExtend) {
         result = evaluator.execute(opExtend);
     }
+
+    @Override
+    public void visit(OpUnfold opUnfold) {
+        result = evaluator.execute(opUnfold);
+    }
+
+
 
     @Override
     public void visit(OpGroup opGroup) {

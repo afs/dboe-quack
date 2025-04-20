@@ -28,7 +28,6 @@ import org.apache.jena.atlas.lib.tuple.TupleFactory;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.query.ARQ;
 import org.apache.jena.sparql.ARQInternalErrorException;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.core.Quad;
@@ -156,7 +155,7 @@ public class OpExecLib {
 
     public static QueryIterator solvePattern(Graph graph, BasicPattern bgp, QueryIterator input, ExecutionContext execCxt) {
         if ( execCxt == null )
-            execCxt = new ExecutionContext(ARQ.getContext(), graph, null, null);
+            execCxt = ExecutionContext.createForGraph(graph);
         if ( input == null )
             input = QueryIterRoot.create(execCxt);
         return PatternMatchData.execute(graph, bgp, input, null, execCxt);

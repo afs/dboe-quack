@@ -35,12 +35,12 @@ import org.seaborne.dboe.engine.general.OpExecLib;
 
 /**
  * Evaluator as a Tree.
- * 
+ *
  * The reference query engine materializes to tables at every step.
- * This class is very similar but based on streams.  
- * 
+ * This class is very similar but is based on streams.
+ *
  * @see OpExecutor -- stream based execution.
- * @see Evaluator  -- the reference query engine 
+ * @see Evaluator  -- the reference query engine
  */
 
 // Use RowList<> as the return ?
@@ -74,7 +74,7 @@ public class OpEvaluator
         this.hideBNodeVars = execCxt.getContext().isTrue(ARQ.hideNonDistiguishedVariables);
     }
 
-    // Public interface 
+    // Public interface
     /*public*/ QueryIterator executeOp(Op op, QueryIterator input) {
         // input?
         if ( input instanceof QueryIterRoot )
@@ -83,7 +83,7 @@ public class OpEvaluator
             throw new NotImplemented("Non-root QueryIterator input");
         return exec(op);
     }
-    
+
     // ---- The recursive step.
     protected QueryIterator exec(Op op) {
         level++;
@@ -107,11 +107,11 @@ public class OpEvaluator
     protected QueryIterator execute(OpTriple opTriple) {
         return execute(opTriple.asBGP());
     }
-    
+
     // ----
-    
+
 //
-    protected QueryIterator execute(OpGraph opGraph) { 
+    protected QueryIterator execute(OpGraph opGraph) {
         QueryIterator qIter = specialcase(opGraph.getNode(), opGraph.getSubOp());
         if (qIter != null)
             return qIter;
@@ -131,7 +131,7 @@ public class OpEvaluator
 
         if (Quad.isDefaultGraph(gn)) {
             // Get factory.
-            ExecutionContext cxt2 = new ExecutionContext(execCxt, execCxt.getDataset().getDefaultGraph());
+            ExecutionContext cxt2 = ExecutionContext.copyChangeActiveGraph(execCxt, execCxt.getDataset().getDefaultGraph());
             OpEvaluator sub = new OpEvaluator(cxt2);
             // Or push-pop ExecutionContext
             return sub.exec(subOp);
@@ -161,7 +161,7 @@ public class OpEvaluator
         OpGraph op = new OpGraph(quadPattern.getGraphNode(), opBGP);
         return exec(op);
     }
-    
+
     protected QueryIterator execute(OpQuadBlock quadBlock) {
         Op op = quadBlock.convertOp();
         return exec(op);
@@ -237,8 +237,15 @@ public class OpEvaluator
 //        QueryIterator qIter = new QueryIterOptionalIndex(left, opCondition.getRight(), execCxt);
 //        return qIter;
 //    }
+
+    protected QueryIterator execute(OpLateral opLateral) { return null; }
+
+    protected QueryIterator execute(OpSemiJoin opSemiJoin) { return null; }
+
+    protected QueryIterator execute(OpAntiJoin opAntiJoin) { return null; }
+
 //
-    protected QueryIterator execute(OpDiff opDiff) { return null; }
+//    protected QueryIterator execute(OpDiff opDiff) { return null; }
 //    protected QueryIterator execute(OpDiff opDiff, QueryIterator input) {
 //        QueryIterator left = exec(opDiff.getLeft(), input);
 //        QueryIterator right = exec(opDiff.getRight(), root());
@@ -450,7 +457,9 @@ public class OpEvaluator
 //        qIter = new QueryIterAssign(qIter, opExtend.getVarExprList(), execCxt, true);
 //        return qIter;
 //    }
-//
+
+		protected QueryIterator execute(OpUnfold opUnfold) { return null; }
+
     public static QueryIterator createRootQueryIterator(ExecutionContext execCxt) {
         return QueryIterRoot.create(execCxt);
     }

@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.engine.binding.BindingFactory;
 import org.seaborne.dboe.engine.Row;
 
 /** Wrap a Row&lt;Node&gt; to present the Binding interface */
@@ -71,5 +72,10 @@ public final class BindingRowNode implements Binding {
     @Override
     public boolean isEmpty() {
         return row.vars().size() == 0;
+    }
+
+    @Override
+    public Binding detach() {
+        return BindingFactory.copy(this);
     }
 }

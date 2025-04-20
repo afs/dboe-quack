@@ -21,16 +21,16 @@ import java.util.Iterator;
 
 public interface RowSource<X> extends Iterator<Row<X>> {
 
-    /** Return true if getting the next element is likely to ready so that
+    /** Return true if getting the next element is likely to be ready so that
      *  {@link #next} and {@link #hasNext} do not block; return
      *  false if they are likely to block.
-     *  
-     *  Also, return false if {@link #hasNext} is known to be false (the iterator has ended). 
-     * 
-     * The default implementation is to defer to {@link #hasNext}. 
-     *  
-     * @return boolean indicating whether there is likely to be data immediately available. 
+     *
+     *  Also, return false if {@link #hasNext} is known to be false (the iterator has ended).
+     *
+     * The default implementation is to defer to {@link #hasNext}.
+     *
+     * @return boolean indicating whether there is likely to be data immediately available.
      */
     default
-    public boolean isReady() { return hasNext(); } 
+    public boolean isReady() { return hasNext(); }
 }

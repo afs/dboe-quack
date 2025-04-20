@@ -23,46 +23,46 @@ import org.apache.jena.query.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
-import org.apache.jena.sparql.resultset.ResultSetCompare;
+import org.apache.jena.sparql.resultset.ResultsCompare;
 import org.junit.Assert;
 import org.junit.Test;
 
 /** Tests of OpExecutor */
 public abstract class AbstractTestOpExecutor extends Assert
 {
-    private static final String DIR = "testing/Engines"; 
+    private static final String DIR = "testing/Engines";
     protected final OpExecutorFactory factory;
     private String name;
-    
+
     public AbstractTestOpExecutor(String name, OpExecutorFactory factory) {
         this.name = name;
         this.factory = factory;
     }
-    
+
     protected abstract Dataset createDataset();
-    
+
     // XXX Need more tests
     // This first group of tests do not lead multiple matches per
-    // same predicate in results nor match same-variable. 
-    // 
+    // same predicate in results nor match same-variable.
+    //
     @Test public void engine_triples_01()       { test("query-triples-1.rq", "data-2.ttl", factory); }
     @Test public void engine_triples_02()       { test("query-triples-2.rq", "data-2.ttl", factory); }
     @Test public void engine_triples_03()       { test("query-triples-3.rq", "data-2.ttl", factory); }
-    
+
     @Test public void engine_quads_01()         { test("query-quads-1.rq",  "data-1.trig", factory); }
     @Test public void engine_quads_02()         { test("query-quads-2.rq",  "data-1.trig", factory); }
     @Test public void engine_quads_03()         { test("query-quads-3.rq",  "data-1.trig", factory); }
     @Test public void engine_quads_04()         { test("query-quads-4.rq",  "data-1.trig", factory); }
     @Test public void engine_quads_filter_01()  { test("query-quads-filter-1.rq",  "data-1.trig", factory); }
     @Test public void engine_quads_filter_02()  { test("query-quads-filter-2.rq",  "data-1.trig", factory); }
-    
+
     // Tests of more complicate BGP and variable patterns
     @Test public void engine_bgp_01()       { test("query-bgp-4.rq", "data-2.ttl", factory); }
     @Test public void engine_bgp_02()       { test("query-bgp-5.rq", "data-2.ttl", factory); }
     @Test public void engine_bgp_03()       { test("query-bgp-6.rq", "data-2.ttl", factory); }
-    
+
     // Use of ?s in the object position!
-    
+
     private void test(String queryFile, String datafile, OpExecutorFactory factory) {
         queryFile = DIR+"/"+queryFile;
         datafile = DIR+"/"+datafile;
@@ -71,8 +71,8 @@ public abstract class AbstractTestOpExecutor extends Assert
         // Default. Generated expected results.
         QueryExecution qExec1 = QueryExecutionFactory.create(query, ds);
         ResultSetRewindable rs1 = ResultSetFactory.makeRewindable(qExec1.execSelect());
-        
-        // Test 
+
+        // Test
         ds = createDataset();
         RDFDataMgr.read(ds, datafile);
         // Test
@@ -80,8 +80,8 @@ public abstract class AbstractTestOpExecutor extends Assert
             QC.setFactory(ds.getContext(), factory);
         QueryExecution qExec = QueryExecutionFactory.create(query, ds);
         ResultSetRewindable rs = ResultSetFactory.makeRewindable(qExec.execSelect());
-        
-        boolean b = ResultSetCompare.equalsByTerm(rs1, rs);
+
+        boolean b = ResultsCompare.equalsByTerm(rs1, rs);
         if ( ! b ) {
             PrintStream out = System.out;
             out.println("---- Test : "+name);

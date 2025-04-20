@@ -30,7 +30,7 @@ import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
-import org.apache.jena.sparql.resultset.ResultSetCompare;
+import org.apache.jena.sparql.resultset.ResultsCompare;
 import org.apache.jena.system.Txn;
 import org.apache.jena.tdb1.solver.OpExecutorTDB1;
 import org.apache.jena.tdb2.TDB2Factory;
@@ -164,7 +164,7 @@ public class TestPatterns extends Assert
                 out.flush();
                 throw ex;
             }
-            boolean b = ResultSetCompare.equalsByTerm(rs1, rs2);
+            boolean b = ResultsCompare.equalsByTerm(rs1, rs2);
 
             //int count = ResultSetFormatter.consume(rs1);
 

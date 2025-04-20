@@ -28,17 +28,17 @@ public class RowBase<X> implements Row<X>
 {
     // Scope for smaller e.g versions that are 1 entry, 2 entries etc etc.
     private Map<Var, X> row = new HashMap<>();
-    
+
     public RowBase() {}
-    
+
     public RowBase(Row<X> other) {
         for ( Var v : other.vars() )
-            row.put(v, other.get(v)); 
+            row.put(v, other.get(v));
     }
-    
-    /* package, the builder */ public void set(Var var, X value)   { row.put(var, value); } 
-    /* package, the builder */ public void unset(Var var)          { row.remove(var); } 
-    
+
+    /* package, the builder */ public void set(Var var, X value)   { row.put(var, value); }
+//    /* package, the builder */ public void unset(Var var)          { row.remove(var); }
+
     @Override
     public X get(Var key) {
         return row.get(key);
@@ -55,7 +55,7 @@ public class RowBase<X> implements Row<X>
         //return Collections.unmodifiableCollection(row.keySet());
         return row.keySet();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return row.isEmpty();
@@ -66,10 +66,10 @@ public class RowBase<X> implements Row<X>
     public boolean isIdentity() {
         return isEmpty();
     }
-    
+
     @Override
     public String toString() {
-        return row.toString();  
+        return row.toString();
     }
 
     @Override

@@ -47,15 +47,15 @@ public class RefactorQueryExecution
 
     /* Rework query execution.
      * Only execute from op.
-     *   Standard QueryEngineFactory 
+     *   Standard QueryEngineFactory
      *   QueryEngineFactory is not per implementation.
      * op-> Plan.
      * Replace QueryEngineRegistry.findFactory
      *   by standard process of:
-     * 
-     * Wrappign in a 
+     *
+     * Wrappign in a
      */
-    
+
     static void execute(DatasetGraph dsg, Op op, Context context) {
         /*
         Algebra.exec(op, dsg)
@@ -64,18 +64,17 @@ public class RefactorQueryExecution
         Plan plan = f.create(op, ds, BindingRoot.create(), null);
         return plan.iterator();
         */
-        
+
         context = Context.mergeCopy(context, dsg.getContext());
         OpExecutorFactory factory = QC.getFactory(context);
         if ( factory == null )
             factory = OpExecutor.stdFactory;
-        
-        ExecutionContext execCxt = new ExecutionContext(context, dsg.getDefaultGraph(), dsg, factory);
-        QueryIterator qIterRoot = OpExecutor.createRootQueryIterator(execCxt); 
+        ExecutionContext execCxt = ExecutionContext.create(dsg, context, factory);
+        QueryIterator qIterRoot = OpExecutor.createRootQueryIterator(execCxt);
         QueryIterator qIterPlan = QC.execute(op, qIterRoot, execCxt);
         Plan plan = new PlanOp(op, null, qIterPlan);
         runPlan(plan);
-        
+
         /*
         Query query = null;
         Dataset dataset = null;
@@ -84,12 +83,12 @@ public class RefactorQueryExecution
         QueryExecutionBase queryExecutionBase = new QueryExecutionBase(query, dataset, context, qefactory) ;
         */
     }
-    
+
     private static void runPlan(Plan plan) {
         //QueryExecUtils.execute(op, dsg)
         List<String> vars = null;
         ResultsFormat outputFormat = ResultsFormat.FMT_TEXT;
-        
+
         Op op = plan.getOp();
         if ( op instanceof OpProject )
             vars = Var.varNames(((OpProject)op).getVars());

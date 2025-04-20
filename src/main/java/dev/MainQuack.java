@@ -29,7 +29,7 @@ import org.apache.jena.sparql.engine.main.OpExecutorFactory;
 import org.apache.jena.sparql.engine.main.QC;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderLib;
 import org.apache.jena.sparql.engine.optimizer.reorder.ReorderTransformation;
-import org.apache.jena.sparql.resultset.ResultSetCompare;
+import org.apache.jena.sparql.resultset.ResultsCompare;
 import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.tdb2.sys.SystemTDB;
@@ -207,7 +207,7 @@ public class MainQuack {
         ResultSetRewindable rs = ResultSetFactory.makeRewindable(qExec.execSelect());
         optimizerReset();
 
-        boolean b = ResultSetCompare.equalsByTerm(rs1, rs);
+        boolean b = ResultsCompare.equalsByTerm(rs1, rs);
         PrintStream out = System.out;
         if ( ! b ) {
             out.println("---- Test");
